@@ -1,17 +1,14 @@
-import { createStackNavigator } from '@react-navigation/stack';
+// import { createStackNavigator } from '@react-navigation/stack';
 import { NavigationContainer } from '@react-navigation/native';
-import LoginScreen from './screens/LoginScreen';
-import RegisterScreen from './screens/RegisterScreen';
-
-const Stack = createStackNavigator();
+import { Text } from 'react-native';
+import MainDrawer from './navigation/MainDrawer';
+import WalletsScreen from './screens/Wallets/WalletsScreen';
+// const Stack = createStackNavigator();
 
 const App = () => {
   return (
     <NavigationContainer>
-      <Stack.Navigator initialRouteName="Login">
-        <Stack.Screen name="Login" component={LoginScreen} />
-        <Stack.Screen name="Register" component={RegisterScreen} />
-      </Stack.Navigator>
+      <MainDrawer/>
     </NavigationContainer>
   );
 };
