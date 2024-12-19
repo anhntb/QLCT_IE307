@@ -1,8 +1,9 @@
-import React, { useState } from "react";
+import React, { useState, useContext } from "react";
 import { View, Text, TextInput, StyleSheet, TouchableOpacity, Image, Button, Platform } from "react-native";
 import DateTimePicker from "@react-native-community/datetimepicker";
 import { FontAwesome } from "@expo/vector-icons";
 import * as ImagePicker from "expo-image-picker";
+import { AuthContext } from "../context/AuthContext";
 
 export default function UserProfile() {
   const [isEditing, setIsEditing] = useState(false);
@@ -33,6 +34,8 @@ export default function UserProfile() {
     setShowDatePicker(Platform.OS === "ios");
     setBirthDate(currentDate);
   };
+
+  const { logout } = useContext(AuthContext);
 
   return (
     <View style={styles.userContainer}>
@@ -106,10 +109,16 @@ export default function UserProfile() {
       </View>
 
       {/* Edit/Save Button */}
-      <TouchableOpacity style={styles.button} onPress={toggleEdit}>
-        <Text style={styles.buttonText}>{isEditing ? "Lưu" : "Chỉnh sửa"}</Text>
-      </TouchableOpacity>
+      <View style={styles.buttonGroup}>
+        <TouchableOpacity style={styles.button} onPress={toggleEdit}>
+          <Text style={styles.buttonText}>{isEditing ? "Lưu" : "Chỉnh sửa"}</Text>
+        </TouchableOpacity>
+        <TouchableOpacity style={styles.button} onPress={logout}>
+          <Text style={styles.buttonText}>Đăng xuất</Text>
+        </TouchableOpacity>
+      </View>
     </View>
+
   );
 }
 
@@ -175,8 +184,13 @@ const styles = StyleSheet.create({
   button: {
     backgroundColor: "#007bff",
     padding: 15,
+    margin: 20,
     borderRadius: 5,
-    marginTop: 20,
+  },
+  buttonGroup: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+
   },
   buttonText: {
     color: "#fff",
