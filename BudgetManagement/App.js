@@ -9,6 +9,7 @@ import { WalletProvider } from './context/WalletContext';
 import { AuthProvider, AuthContext } from './context/AuthContext';
 import { useContext } from 'react';
 import AuthStack from './navigation/AuthStack';
+import AddExpenseScreen from './screens/AddExpenseScreen';
 
 const AppNavigator = () => {
   const { isAuthenticated } = useContext(AuthContext);
@@ -22,11 +23,12 @@ const AppNavigator = () => {
 
 const App = () => {
   return (
-    <AuthProvider>
-      <WalletProvider>
-        <AppNavigator />
-      </WalletProvider>
-    </AuthProvider>
+    // <AuthProvider>
+    //   <WalletProvider>
+    //     <AppNavigator />
+    //   </WalletProvider>
+    // </AuthProvider>
+    <AddExpenseScreen></AddExpenseScreen>
   );
 };
 
