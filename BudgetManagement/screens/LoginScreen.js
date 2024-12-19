@@ -1,16 +1,15 @@
 import React, { useState } from 'react';
 import { StyleSheet, View, Text, TextInput, TouchableOpacity, Alert } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
+import { AuthContext } from '../context/AuthContext';
+import { useContext } from 'react';
 
 const LoginScreen = () => {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
+  const { login } = useContext(AuthContext);
 
   const navigation = useNavigation();
-
-  const handleLogin = () => {
-    Alert.alert('Login', `Username: ${username}\nPassword: ${password}`);
-  };
 
   const handleForgotPassword = () => {
     Alert.alert('Forgot Password', 'Redirecting to reset password...');
@@ -43,7 +42,7 @@ const LoginScreen = () => {
         onChangeText={setPassword}
       />
 
-      <TouchableOpacity style={styles.button} onPress={handleLogin}>
+      <TouchableOpacity style={styles.button} onPress={() => login(username, password)}>
         <Text style={styles.buttonText}>Đăng nhập</Text>
       </TouchableOpacity>
 
