@@ -6,7 +6,8 @@ import {
   StyleSheet,
   TouchableOpacity,
   Image,
-  ScrollView
+  ScrollView,
+  SectionList
 } from 'react-native';
 import { useContext } from 'react';
 import MonthOverview from './Overview/MonthOverview';
@@ -28,7 +29,7 @@ const HomeScreen = ({navigation}) => {
     return(
     // Sơ lược
 
-    <View style={styles.homeContainer}> 
+    <ScrollView style={styles.homeContainer}> 
     <TouchableOpacity style={styles.componentContainer} onPress={() => navigation.navigate("Overview")}>
       <Text style={styles.title}>Sơ lược</Text>
       <View style={styles.overviewContainer}>
@@ -88,8 +89,7 @@ const HomeScreen = ({navigation}) => {
       />
       </View>
     </TouchableOpacity>
-    
-    </View>
+    </ScrollView>
         
     )
 }
@@ -99,23 +99,24 @@ const styles = StyleSheet.create({
   homeContainer: {
     flex: 1,
     padding: 10,
+    backgroundColor: "#f5f5f5",
   },
   componentContainer: {
-    marginBottom: 10,
+    marginBottom: 20,
+
   },
   title: {
     fontWeight: "bold",
     fontSize: 20,
     marginBottom: 2,
+    textAlign: "center",
   },
-  overview: {
-    backgroundColor: "red",
-  },
+
   walletItem: {
     flexDirection: "row",
     justifyContent: "space-between",
     padding: 15,
-    marginBottom: 10,
+    marginBottom: 5,
     backgroundColor: "#fff",
     borderRadius: 10,
     elevation: 2,
@@ -126,7 +127,8 @@ const styles = StyleSheet.create({
   },
   walletAmount: {
     fontSize: 16,
-    color: "gray",
+    color: "green",
+    fontWeight: "bold",
   },
   transaction: {
     flexDirection: "row",
@@ -138,6 +140,7 @@ const styles = StyleSheet.create({
     padding: 5,
     paddingLeft: 10,
     paddingRight: 10,
+    elevation: 1,
   },
   icon: {
     width: 40,
