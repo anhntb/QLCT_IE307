@@ -62,7 +62,7 @@ const MonthOverview = ({ data }) => {
         />
         <View
           style={{
-            marginLeft: 30,
+            marginLeft: 31,
             position: 'absolute',
             width: 40,
             height: 40,
@@ -86,14 +86,17 @@ const styles = StyleSheet.create({
     backgroundColor: '#fff',
     borderRadius: 8,
     marginBottom: 10,
+    elevation: 2,
   },
   monthText: {
-    fontSize: 16,
+    fontSize: 18,
     fontWeight: 'bold',
-    marginBottom: 5,
+    textAlign: "center",
+    padding: 5,
   },
   rowContainer: {
     flexDirection: 'row',
+    borderRadius: 8,
     alignItems: 'center',
   },
   infoContainer: {

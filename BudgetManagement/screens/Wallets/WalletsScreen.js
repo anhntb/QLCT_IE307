@@ -210,7 +210,7 @@ const totalAmount = wallets.reduce((sum, wallet) => sum + wallet.amount, 0);
 
 const styles = StyleSheet.create({
     allWalletscontainer: {
-    marginTop: 30,
+    marginTop: 10,
     flex: 1,
     backgroundColor: "#f5f5f5",
     padding: 20,
@@ -218,13 +218,18 @@ const styles = StyleSheet.create({
   totalContainer: {
     marginBottom: 20,
     padding: 15,
-    backgroundColor: "#fff",
+    backgroundColor: "#007BFF",
     borderRadius: 10,
     elevation: 2,
+  },
+  walletName:{
+    backgroundColor: "#007BFF",
+    
   },
   totalText: {
     fontSize: 18,
     fontWeight: "bold",
+    color: "white",
   },
   walletContainer: {
     padding: 15,
@@ -245,8 +250,9 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
   },
   walletAmount: {
-    fontSize: 16,
-    color: "gray",
+    fontSize: 18,
+    color: "green",
+    fontWeight: "bold",
   },
   walletMore:{
     flexDirection: "row",
