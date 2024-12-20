@@ -17,7 +17,7 @@ const OverviewScreen = () => {
 const styles = StyleSheet.create({
   container: {
     padding: 10,
-    backgroundColor: '#fff',
+    backgroundColor: '#f5f5f5',
   },
 });
 

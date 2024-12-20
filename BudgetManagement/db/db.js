@@ -61,6 +61,21 @@ export const deleteWallet = async (id) => {
     throw error;
   }
 };
+// Xóa ví theo name
+export const deleteWalletByName = async (name) => {
+  const db = await openDatabase();
+  try {
+    const result = await db.runAsync(
+      'DELETE FROM wallets WHERE name = ?;',
+      id
+    );
+    console.log('Wallet deleted with name:', name);
+    return result.changes;
+  } catch (error) {
+    console.error('Delete wallet error:', error);
+    throw error;
+  }
+};
 
 // Cộng hoặc trừ tiền trong ví
 export const updateWalletAmount = async (id, amountChange) => {

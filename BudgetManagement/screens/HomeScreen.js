@@ -6,29 +6,72 @@ import {
   StyleSheet,
   TouchableOpacity,
   Image,
-  ScrollView
+  ScrollView,
+  Animated,
+  SafeAreaView,
 } from 'react-native';
 import { useContext } from 'react';
 import MonthOverview from './Overview/MonthOverview';
 import { monthlyData } from '../data/monthlyData';
 import { WalletContext } from '../context/WalletContext';
 import transactions from '../data/transactions';
+import { useNavigation } from '@react-navigation/native';
+import { FontAwesome } from "@expo/vector-icons";
+import AddExpenseScreen from './AddExpenseScreen';
+
 
 const HomeScreen = ({navigation}) => {
     const month12Data = monthlyData.find((item) => item.month === 'Tháng Mười Hai 2024'); 
     const { wallets } = useContext(WalletContext);
-    
+
+    //Floating Button
+    const [open, setOpen] = useState(false);
+    const [animation] = useState(new Animated.Value(0));
+
+    const toggleMenu = () => {
+    const toValue = open ? 0 : 1;
+
+    Animated.timing(animation, {
+      toValue,
+      duration: 300,
+      useNativeDriver: true,
+    }).start();
+
+    setOpen(!open);
+   };
+
+    const renderOption = (title, iconName, color, onPress) => {
+    return (
+      <View style={styles.actionButtonContainer}>
+      <Text style={styles.actionButtonText}>{title}</Text>
+
+      <TouchableOpacity
+        style={[styles.actionButton, { backgroundColor: color }]}
+        onPress={onPress}
+      >
+        <FontAwesome name={iconName} size={20} color="white" />
+      </TouchableOpacity>
+      </View>
+    );
+    };
+
+    const buttonStyle = {
+    transform: [
+      {
+        scale: animation,
+      },
+    ],
+    };
   
     // Sắp xếp giao dịch theo thứ tự thời gian (từ sớm đến trễ)
     const sortedTransactions = [...transactions].sort(
       (a, b) => new Date(a.date) - new Date(b.date)
     );
-
-
+  
     return(
     // Sơ lược
-
-    <View style={styles.homeContainer}> 
+    <View style={{flex: 1,}}>
+    <ScrollView style={styles.homeContainer}> 
     <TouchableOpacity style={styles.componentContainer} onPress={() => navigation.navigate("Overview")}>
       <Text style={styles.title}>Sơ lược</Text>
       <View style={styles.overviewContainer}>
@@ -88,7 +131,40 @@ const HomeScreen = ({navigation}) => {
       />
       </View>
     </TouchableOpacity>
+      
     
+   
+    </ScrollView>
+    <View style={{justifyContent: 'flex-end'}}>
+      <View style={styles.optionsContainer}>
+        {open &&
+          renderOption('Chuyển tiền', 'exchange', '#9b59b6', () =>{
+            navigation.navigate("Wallets");
+            setOpen(!open);
+          }
+            
+          )}
+        {open &&
+          renderOption('Thu nhập', 'plus', 'green', () =>{
+            navigation.navigate("AddIncome");
+            setOpen(!open);
+          }
+          )}
+        {open &&
+          renderOption('Chi phí', 'minus', 'red', () =>{
+            navigation.navigate("AddExpense");
+            setOpen(!open);
+          }
+          )}
+      </View>
+
+      {/* Floating Action Button */}
+      <View style={{flex: 1 }}>
+        <TouchableOpacity style={styles.fab} onPress={toggleMenu}>
+          <FontAwesome name={open ? 'close' : 'plus'} size={24} color="white" />
+        </TouchableOpacity>
+      </View>
+      </View>
     </View>
         
     )
@@ -99,23 +175,23 @@ const styles = StyleSheet.create({
   homeContainer: {
     flex: 1,
     padding: 10,
+    backgroundColor: "#f5f5f5",
   },
   componentContainer: {
-    marginBottom: 10,
+    marginBottom: 20,
   },
   title: {
     fontWeight: "bold",
     fontSize: 20,
     marginBottom: 2,
+    textAlign: "center",
   },
-  overview: {
-    backgroundColor: "red",
-  },
+
   walletItem: {
     flexDirection: "row",
     justifyContent: "space-between",
     padding: 15,
-    marginBottom: 10,
+    marginBottom: 5,
     backgroundColor: "#fff",
     borderRadius: 10,
     elevation: 2,
@@ -126,7 +202,8 @@ const styles = StyleSheet.create({
   },
   walletAmount: {
     fontSize: 16,
-    color: "gray",
+    color: "green",
+    fontWeight: "bold",
   },
   transaction: {
     flexDirection: "row",
@@ -138,6 +215,7 @@ const styles = StyleSheet.create({
     padding: 5,
     paddingLeft: 10,
     paddingRight: 10,
+    elevation: 1,
   },
   icon: {
     width: 40,
@@ -150,5 +228,62 @@ const styles = StyleSheet.create({
   category: {
     fontSize: 16,
     fontWeight: "bold",
+  },
+  titleStyle: {
+    fontSize: 24,
+    fontWeight: 'bold',
+    textAlign: 'center',
+    marginBottom: 10,
+  },
+  linkStyle: {
+    fontSize: 16,
+    textAlign: 'center',
+  },
+  fab: {
+    position: 'absolute',
+    bottom: 30,
+    right: 30,
+    backgroundColor: '#007BFF',
+    width: 50,
+    height: 50,
+    borderRadius: 30,
+    justifyContent: 'center',
+    alignItems: 'center',
+    elevation: 5,
+  },
+  optionsContainer: {
+    position: 'absolute',
+    bottom: 100,
+    right: 30,
+  },
+  actionButtonContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'flex-end',
+  },
+  actionButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginVertical: 10,
+    paddingVertical: 10,
+    paddingHorizontal: 15,
+    borderRadius: 50,
+    elevation: 3,
+    width: 50,
+    height: 50,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.3,
+    shadowRadius: 4,
+    marginLeft: 10,
+  },
+  actionButtonText: {
+    color: 'white',
+    fontWeight: "bold",
+    fontSize: 16,
+    backgroundColor: '#007BFF',
+    borderRadius: 5,
+    padding: 5,
   },
 })

@@ -21,13 +21,12 @@ const AppNavigator = () => {
 
 const App = () => {
   return (
-    // <AuthProvider>
-    //   <WalletProvider>
-    //     <AppNavigator />
-    //   </WalletProvider>
-    // </AuthProvider>
-    // <AddExpenseScreen></AddExpenseScreen>
-    <AddIncomeScreen></AddIncomeScreen>
+    <AuthProvider>
+      <WalletProvider>
+        <AppNavigator />
+      </WalletProvider>
+    </AuthProvider>
+
   );
 };
 

@@ -9,6 +9,11 @@ import {
 } from 'react-native';
 import transactions from '../data/transactions';
 
+const parseDate = (dateString) => {
+  const [day, month, year] = dateString.split('/').map(Number);
+  return new Date(year, month - 1, day); // Month is 0-based
+};
+
 const TransactionScreen = () => {
 
 
@@ -17,14 +22,14 @@ const TransactionScreen = () => {
   // Lọc giao dịch theo năm
   const filterByYear = (year) => {
     return transactions.filter(
-      (transaction) => new Date(transaction.date).getFullYear() === year
+      (transaction) => parseDate(transaction.date).getFullYear() === year
     );
   };
 
   // Lọc giao dịch theo năm và nhóm theo tháng
   const groupByMonth = (filteredTransactions) => {
     return filteredTransactions.reduce((acc, transaction) => {
-      const month = new Date(transaction.date).getMonth() + 1; // Tháng 1 => 12
+      const month = parseDate(transaction.date).getMonth() + 1; // Tháng 1 => 12
       if (!acc[month]) {
         acc[month] = [];
       }
@@ -66,7 +71,7 @@ const TransactionScreen = () => {
         <FlatList
           data={Object.keys(groupedTransactions).sort((a, b) => b - a)} // Sắp xếp tháng giảm dần
           renderItem={({ item: month }) => (
-            <View>
+            <View style={styles.transactionContainer}>
               {/* Tháng và tổng cộng */}
               <View style={styles.monthHeader}>
                 <Text style={styles.monthTitle}>Tháng {month}/{currentYear}</Text>
@@ -80,7 +85,7 @@ const TransactionScreen = () => {
               {groupedTransactions[month].map((transaction) => (
                 <View
                   key={transaction.id} // Hoặc bất kỳ giá trị nào là duy nhất 
-                  style={[styles.transaction, {borderRightColor: transaction.amount < 0 ? 'red' : 'green' }]}  
+                  style={[styles.transaction, {borderColor: transaction.amount < 0 ? 'red' : 'green' }]}  
                 >
                 <Image source={transaction.icon} style={styles.icon} />
                 <View style={styles.details}>
@@ -112,23 +117,30 @@ const TransactionScreen = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    padding: 10,
     backgroundColor: '#f5f5f5',
   },
   yearSelector: {
     flexDirection: 'row',
-    justifyContent: 'center',
+    justifyContent: "space-between",
     alignItems: 'center',
-    marginBottom: 20,
+    backgroundColor: "#007BFF",
+    padding: 5, 
+    paddingHorizontal:20,
+
   },
   yearButton: {
     fontSize: 24,
     fontWeight: 'bold',
     paddingHorizontal: 20,
+    color: "white",
+  },
+  transactionContainer: {
+    marginBottom: 10,
   },
   yearText: {
     fontSize: 20,
     fontWeight: 'bold',
+    color: "white",
   },
   noTransactions: {
     textAlign: 'center',
@@ -137,18 +149,22 @@ const styles = StyleSheet.create({
     marginTop: 50,
   },
   monthHeader: {
-    backgroundColor: '#eee',
+    backgroundColor: 'white',
+    marginHorizontal: 10,
+    elevation: 2,
     padding: 10,
-    borderRadius: 5,
+    borderRadius: 8,
     marginVertical: 10,
+    backgroundColor: "#007BFF",
   },
   monthTitle: {
-    fontSize: 18,
+    fontSize: 16 ,
     fontWeight: 'bold',
+    color: "white",
   },
   monthTotal: {
     fontSize: 16,
-    color: '#333',
+    color: 'white',
   },
   icon: {
     width: 40,
@@ -166,8 +182,11 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     marginBottom: 5,
     padding: 5,
-    paddingLeft: 10,
-    paddingRight: 10,
+    marginLeft: 10,
+    marginRight: 10,
+    paddingLeft: 20,
+    paddingRight: 20,
+    
   },
   details: {
     flex: 1,
