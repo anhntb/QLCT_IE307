@@ -9,6 +9,11 @@ import {
 } from 'react-native';
 import transactions from '../data/transactions';
 
+const parseDate = (dateString) => {
+  const [day, month, year] = dateString.split('/').map(Number);
+  return new Date(year, month - 1, day); // Month is 0-based
+};
+
 const TransactionScreen = () => {
 
 
@@ -17,14 +22,14 @@ const TransactionScreen = () => {
   // Lọc giao dịch theo năm
   const filterByYear = (year) => {
     return transactions.filter(
-      (transaction) => new Date(transaction.date).getFullYear() === year
+      (transaction) => parseDate(transaction.date).getFullYear() === year
     );
   };
 
   // Lọc giao dịch theo năm và nhóm theo tháng
   const groupByMonth = (filteredTransactions) => {
     return filteredTransactions.reduce((acc, transaction) => {
-      const month = new Date(transaction.date).getMonth() + 1; // Tháng 1 => 12
+      const month = parseDate(transaction.date).getMonth() + 1; // Tháng 1 => 12
       if (!acc[month]) {
         acc[month] = [];
       }
