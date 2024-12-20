@@ -15,9 +15,7 @@ import MonthOverview from './Overview/MonthOverview';
 import { monthlyData } from '../data/monthlyData';
 import { WalletContext } from '../context/WalletContext';
 import transactions from '../data/transactions';
-import { useNavigation } from '@react-navigation/native';
 import { FontAwesome } from "@expo/vector-icons";
-import AddExpenseScreen from './AddExpenseScreen';
 
 
 const HomeScreen = ({navigation}) => {
@@ -110,7 +108,7 @@ const HomeScreen = ({navigation}) => {
               { borderRightColor: item.amount < 0 ? "red" : "green" },
             ]}
           >
-            <Image source={item.icon} style={styles.icon} />
+            <FontAwesome name={item.icon} size={22} style={styles.icon}/>
             <View style={styles.details}>
               <Text style={styles.category}>{item.category}</Text>
               <Text style={styles.wallet}>{item.wallet}</Text>
@@ -220,7 +218,7 @@ const styles = StyleSheet.create({
   icon: {
     width: 40,
     height: 40,
-    marginRight: 10,
+    paddingTop: 8,
   },
   details: {
     flex: 1,
