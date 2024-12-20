@@ -9,6 +9,7 @@ SafeAreaView,
   Switch,
   Modal,
   FlatList,
+  ScrollView
 } from 'react-native';
 import { FontAwesome } from '@expo/vector-icons';
 import DateTimePicker from '@react-native-community/datetimepicker';
@@ -58,6 +59,7 @@ const AddIncomeScreen = ({navigation}) => {
 
   return (
     <SafeAreaView style={styles.container}>
+      <ScrollView>
       {/* Header */}
       <View style={styles.header}>
         <TouchableOpacity onPress={handleGoBack}>
@@ -169,6 +171,7 @@ const AddIncomeScreen = ({navigation}) => {
           <Text style={styles.buttonText}>LƯU LẠI</Text>
         </TouchableOpacity>
       </View>
+      </ScrollView>
     </SafeAreaView>
   );
 };
