@@ -35,6 +35,12 @@ export default function UserProfile() {
     setBirthDate(currentDate);
   };
 
+  const formattedDate = birthDate.toLocaleDateString('vi-VN', {
+    day: '2-digit',
+    month: '2-digit',
+    year: 'numeric',
+  });
+
   const { logout } = useContext(AuthContext);
 
   return (
@@ -70,7 +76,7 @@ export default function UserProfile() {
       <View style={styles.inputGroup}>
         <Text style={styles.label}>Ngày Sinh:</Text>
         <View style={styles.datePickerContainer}>
-          <Text style={styles.text}>{birthDate.toLocaleDateString()}</Text>
+          <Text style={styles.text}>{formattedDate}</Text>
           {isEditing && (
             <TouchableOpacity onPress={() => setShowDatePicker(true)}>
               <FontAwesome name="calendar" size={24} color="gray" />
