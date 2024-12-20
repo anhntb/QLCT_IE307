@@ -1,15 +1,14 @@
-// import { createStackNavigator } from '@react-navigation/stack';
 import { NavigationContainer } from '@react-navigation/native';
 import { Text } from 'react-native';
 import MainDrawer from './navigation/MainDrawer';
 import WalletsScreen from './screens/Wallets/WalletsScreen';
-// const Stack = createStackNavigator();
 import { initializeDatabase } from './db/db';
 import { WalletProvider } from './context/WalletContext';
 import { AuthProvider, AuthContext } from './context/AuthContext';
 import { useContext } from 'react';
 import AuthStack from './navigation/AuthStack';
 import AddExpenseScreen from './screens/AddExpenseScreen';
+import AddIncomeScreen from './screens/AddIncomeScreen';
 
 const AppNavigator = () => {
   const { isAuthenticated } = useContext(AuthContext);
@@ -28,7 +27,8 @@ const App = () => {
     //     <AppNavigator />
     //   </WalletProvider>
     // </AuthProvider>
-    <AddExpenseScreen></AddExpenseScreen>
+    // <AddExpenseScreen></AddExpenseScreen>
+    <AddIncomeScreen></AddIncomeScreen>
   );
 };
 
