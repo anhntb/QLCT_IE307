@@ -62,7 +62,7 @@ const MonthOverview = ({ data }) => {
         />
         <View
           style={{
-            marginLeft: 30,
+            marginLeft: 31,
             position: 'absolute',
             width: 40,
             height: 40,

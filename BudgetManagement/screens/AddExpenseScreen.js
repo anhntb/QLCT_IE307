@@ -13,7 +13,7 @@ SafeAreaView,
 import { FontAwesome } from '@expo/vector-icons';
 import DateTimePicker from '@react-native-community/datetimepicker';
 
-const AddExpenseScreen = () => {
+const AddExpenseScreen = ({navigation}) => {
   const [checked, setChecked] = useState(false);
   const [date, setDate] = useState(new Date());
   const [showDatePicker, setShowDatePicker] = useState(false);
@@ -178,7 +178,6 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#f9f9f9',
-    marginTop: 20,
   },
   header: {
     flexDirection: 'row',
