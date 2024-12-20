@@ -26,7 +26,7 @@ const transactions = [
       date: "10/12/2024",
       wallet: "TIỀN MẶT",
       note: "",
-      icon: "money",
+      icon: "cutlery",
     },
     {
       id: "4",
@@ -36,6 +36,24 @@ const transactions = [
       wallet: "TIỀN MẶT",
       note: "",
       icon: "money",
+    },
+    {
+      id: "5",
+      amount: 5000000,
+      category: "Lương",
+      date: "11/12/2023",
+      wallet: "TIỀN MẶT",
+      note: "",
+      icon: "money",
+    },
+    {
+      id: "6",
+      amount: -25000,
+      category: "Đồ ăn/Đồ uống",
+      date: "10/12/2023",
+      wallet: "TIỀN MẶT",
+      note: "",
+      icon: "cutlery",
     },
   ];
   
