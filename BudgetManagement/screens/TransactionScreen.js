@@ -8,6 +8,7 @@ import {
   Image,
 } from 'react-native';
 import transactions from '../data/transactions';
+import { FontAwesome } from "@expo/vector-icons";
 
 const parseDate = (dateString) => {
   const [day, month, year] = dateString.split('/').map(Number);
@@ -87,7 +88,8 @@ const TransactionScreen = () => {
                   key={transaction.id} // Hoặc bất kỳ giá trị nào là duy nhất 
                   style={[styles.transaction, {borderColor: transaction.amount < 0 ? 'red' : 'green' }]}  
                 >
-                <Image source={transaction.icon} style={styles.icon} />
+                {/* <Image source={transaction.icon} style={styles.icon} /> */}
+                <FontAwesome name={transaction.icon} size={24} style={styles.icon}/>
                 <View style={styles.details}>
                   <Text style={styles.category}>{transaction.category}</Text>
                   <Text style={styles.wallet}>{transaction.wallet}</Text>
@@ -169,7 +171,7 @@ const styles = StyleSheet.create({
   icon: {
     width: 40,
     height: 40,
-    
+    paddingTop: 8,
   },
   rightSection: {
     alignItems: 'flex-end',
