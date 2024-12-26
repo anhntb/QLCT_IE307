@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import {
   View,
   Alert,
@@ -13,6 +13,7 @@ import {
 import { FontAwesome } from "@expo/vector-icons";
 import { Picker } from "@react-native-picker/picker";
 import { initializeDatabase, insertWallet, fetchAllWallets, updateWalletAmount, deleteWallet, updateWalletInfo  } from "../../db/db";
+import { useFocusEffect } from '@react-navigation/native';
 
 export default function WalletsScreen() {
   const [wallets, setWallets] = useState([]);
@@ -34,6 +35,12 @@ export default function WalletsScreen() {
     initializeDatabase();
     loadWallets();
   }, []);
+  
+  useFocusEffect(
+    useCallback(() => {
+      loadWallets();
+    }, [])
+  );
 
   const loadWallets = async () => {
     const allWallets = await fetchAllWallets();

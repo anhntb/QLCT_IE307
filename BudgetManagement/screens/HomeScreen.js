@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import {
   View,
   Text,
@@ -16,11 +16,13 @@ import { monthlyData } from '../data/monthlyData';
 import { WalletContext } from '../context/WalletContext';
 import transactions from '../data/transactions';
 import { FontAwesome } from "@expo/vector-icons";
-
+import { useFocusEffect } from '@react-navigation/native';
+import { fetchAllWallets } from '../db/db';
 
 const HomeScreen = ({navigation}) => {
     const month12Data = monthlyData.find((item) => item.month === 'Tháng Mười Hai 2024'); 
-    const { wallets } = useContext(WalletContext);
+    const { wallet } = useContext(WalletContext);
+    const [wallets, setWallets] = useState([]);
 
     //Floating Button
     const [open, setOpen] = useState(false);
@@ -37,6 +39,21 @@ const HomeScreen = ({navigation}) => {
 
     setOpen(!open);
    };
+
+   useFocusEffect(
+    useCallback(() => {
+      loadWallets();
+    }, [])
+  );
+
+  const loadWallets = async () => {
+    try {
+      const result = await fetchAllWallets();
+      setWallets(result);
+    } catch (error) {
+      console.error('Error fetching wallets:', error);
+    }
+  };
 
     const renderOption = (title, iconName, color, onPress) => {
     return (
@@ -82,7 +99,7 @@ const HomeScreen = ({navigation}) => {
       <Text style={styles.title}>Các tài khoản</Text>
       <View>
          <FlatList
-          data={wallets}
+          data={wallet}
           keyExtractor={(item) => item.id.toString()}
           renderItem={({ item }) => (
             <View style={styles.walletItem}>
