@@ -105,6 +105,7 @@ const AddExpenseScreen = ({navigation}) => {
     };
 
   return (
+    
     <SafeAreaView style={styles.container}>
       <ScrollView>
       {/* Header */}
@@ -256,6 +257,7 @@ const AddExpenseScreen = ({navigation}) => {
       </View>
       </ScrollView>
     </SafeAreaView>
+    
   );
 };
 
