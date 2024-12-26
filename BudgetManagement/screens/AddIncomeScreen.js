@@ -61,14 +61,14 @@ const AddIncomeScreen = ({navigation}) => {
   ];
 
   // Thêm hàm để xử lý lưu thu nhập
-  const handleSaveExpense = async () => {
+  const handleSaveIncome = async () => {
     try {
       if (!amount || !selectedCategory || !date || !selectedWalletId) {
         console.error('Please fill in all fields');
         return;
       }
       await insertIncome(amount, selectedCategory, date, selectedWalletId, note);
-      await loadWallets(); // Reload dữ liệu ví sau khi lưu chi tiêu
+      await loadWallets(); // Reload dữ liệu ví sau khi lưu thu nhập
       navigation.navigate('Home'); // Điều hướng trở lại màn hình Home
     } catch (error) {
       console.error('Error saving expense:', error);
@@ -247,8 +247,8 @@ const AddIncomeScreen = ({navigation}) => {
         <TouchableOpacity onPress={handleGoBack} style={styles.cancelButton}>
           <Text style={styles.buttonText}>HỦY</Text>
         </TouchableOpacity>
-        {/* Gọi hàm `handleSaveExpense` khi người dùng nhấn nút lưu */}
-        <TouchableOpacity onPress={handleSaveExpense} style={styles.saveButton}>
+        {/* Gọi hàm `handleSaveIncome` khi người dùng nhấn nút lưu */}
+        <TouchableOpacity onPress={handleSaveIncome} style={styles.saveButton}>
           <Text style={styles.buttonText}>LƯU LẠI</Text>
         </TouchableOpacity>
       </View>
