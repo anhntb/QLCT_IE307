@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import {
 SafeAreaView,
   View,
@@ -10,16 +10,50 @@ SafeAreaView,
   Modal,
   FlatList,
   ScrollView,
+  Alert,
 } from 'react-native';
 import { FontAwesome } from '@expo/vector-icons';
 import DateTimePicker from '@react-native-community/datetimepicker';
+import { fetchAllWallets, initializeDatabase, insertTran } from '../db/db';
+import { useFocusEffect } from '@react-navigation/native';
+
 
 const AddExpenseScreen = ({navigation}) => {
   const [checked, setChecked] = useState(false);
   const [date, setDate] = useState(new Date());
+  const [note, setNote] = useState('');
+  const [amount, setAmount] = useState('');
   const [showDatePicker, setShowDatePicker] = useState(false);
   const [categoryModalVisible, setCategoryModalVisible] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState("Đồ ăn/Đồ uống");
+  const [selectedWalletId, setSelectedWalletId] = useState(false);
+  const [selectedWalletName, setSelectedWalletName] = useState("Ví");
+  const [wallets, setWallets] = useState([]);
+  const [modalVisible, setModalVisible] = useState(false);
+
+  useEffect(() => {
+    loadWallets();
+  }, []);
+
+  const loadWallets = async () => {
+    try {
+      const result = await fetchAllWallets();
+      setWallets(result);
+    } catch (error) {
+      console.error('Error fetching wallets:', error);
+    }
+  };
+
+
+  const handleWalletPress = () => {
+    setModalVisible(true);
+  };
+
+  const handleWalletSelect = (wallet) => {
+    setSelectedWalletId(wallet.id);
+    setSelectedWalletName(wallet.name);
+    setModalVisible(false);
+  };
 
   const categories = [
     "Đồ ăn/Đồ uống",
@@ -30,6 +64,28 @@ const AddExpenseScreen = ({navigation}) => {
     "Sức khỏe",
     "Khác",
   ];
+
+  // Thêm hàm để xử lý lưu chi tiêu
+  const handleSaveExpense = async () => {
+    try {
+      if (!amount || !selectedCategory || !date || !selectedWalletId) {
+        Alert.alert('Error', 'Vui lòng điền đủ thông tin!');
+        return;
+      }
+      
+      const selectedWallet = wallets.find(wallet => wallet.id === selectedWalletId);
+      if (selectedWallet && parseFloat(amount) > selectedWallet.amount) {
+        Alert.alert('Error', 'Số dư không đủ để thực hiện giao dịch!');
+        return;
+      }
+
+      await insertTran(-amount, selectedCategory, date.toISOString().split('T')[0], selectedWalletId, note);
+      await loadWallets(); // Reload dữ liệu ví sau khi lưu chi tiêu
+      navigation.navigate('Home'); // Điều hướng trở lại màn hình Home
+    } catch (error) {
+      console.error('Error saving expense:', error);
+    }
+  };
 
   const handleCategorySelect = (category) => {
     setSelectedCategory(category);
@@ -76,6 +132,8 @@ const AddExpenseScreen = ({navigation}) => {
           style={styles.input}
           placeholder="Giá trị"
           keyboardType="numeric"
+          value={amount}
+          onChangeText={setAmount}
         />
 
         {/* Category Section */}
@@ -86,7 +144,7 @@ const AddExpenseScreen = ({navigation}) => {
             style={styles.addButton}
             onPress={() => setCategoryModalVisible(true)}
           >
-            <FontAwesome name="plus" size={20} color="#fff" />
+          <FontAwesome name="plus" size={20} color="#fff" />
           </TouchableOpacity>
         </View>
 
@@ -122,10 +180,41 @@ const AddExpenseScreen = ({navigation}) => {
           </View>
         </Modal>
 
-        <View style={styles.fieldContainer}>
-          <FontAwesome name="university" size={24} color="#000" />
-          <Text style={styles.fieldText}>Ví</Text>
+      <View style={styles.fieldContainer}>
+        <FontAwesome name="university" size={24} color="#000" />
+        <TouchableOpacity onPress={handleWalletPress}>
+        <Text style={styles.fieldText}>{selectedWalletName}</Text>
+        </TouchableOpacity>
+
+      {/* Wallet Modal */}
+      <Modal
+        animationType="slide"
+        transparent={true}
+        visible={modalVisible}
+        onRequestClose={() => setModalVisible(false)}
+      >
+        <View style={styles.modalOverlay}>
+          <View style={styles.modalContainer}>
+            <Text style={styles.modalTitle}>Chọn ví</Text>
+            <FlatList
+              data={wallets}
+              keyExtractor={(item) => item.id.toString()}
+              renderItem={({ item }) => (
+                <TouchableOpacity onPress={() => handleWalletSelect(item)}>
+                  <Text style={styles.walletItem}>{item.name}</Text>
+                </TouchableOpacity>
+              )}
+            />
+            <TouchableOpacity
+              style={styles.modalCloseButton}
+              onPress={() => setModalVisible(false)}
+            >
+              <Text style={styles.modalCloseButtonText}>Đóng</Text>
+            </TouchableOpacity>
+          </View>
         </View>
+      </Modal>
+    </View>
 
         <View style={styles.fieldContainer}>
           <FontAwesome name="calendar" size={24} color="#000" />
@@ -154,6 +243,8 @@ const AddExpenseScreen = ({navigation}) => {
         <View style={styles.fieldContainer}>
           <FontAwesome name="pencil" size={24} color="#000" />
           <TextInput style={styles.fieldText}
+                    value={note}
+                    onChangeText={setNote}
                     placeholder="Ghi chú (Không bắt buộc)"
           ></TextInput>
         </View>
@@ -169,7 +260,8 @@ const AddExpenseScreen = ({navigation}) => {
         <TouchableOpacity onPress={handleGoBack} style={styles.cancelButton}>
           <Text style={styles.buttonText}>HỦY</Text>
         </TouchableOpacity>
-        <TouchableOpacity onPress={handleGoBack} style={styles.saveButton}>
+        {/* Gọi hàm `handleSaveExpense` khi người dùng nhấn nút lưu */}
+        <TouchableOpacity onPress={handleSaveExpense} style={styles.saveButton}>
           <Text style={styles.buttonText}>LƯU LẠI</Text>
         </TouchableOpacity>
       </View>
@@ -272,6 +364,10 @@ const styles = StyleSheet.create({
     marginLeft: 8,
     borderBottomWidth: 1,
     borderBottomColor: '#e8e8e8',
+  },
+  walletItem: {
+    padding: 10,
+    fontSize: 18,
   },
   switchContainer: {
     flexDirection: 'row',

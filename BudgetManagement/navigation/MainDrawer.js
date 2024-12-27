@@ -9,6 +9,7 @@ import UserProfile from '../screens/UserProfile';
 import HomeScreen from '../screens/HomeScreen';
 import AddExpenseScreen from '../screens/AddExpenseScreen';
 import AddIncomeScreen from '../screens/AddIncomeScreen';
+import FilterTransactionsScreen from '../screens/FilterTransactionsScreen';
 const Drawer = createDrawerNavigator();
 
 const MainDrawer = () => {
@@ -121,6 +122,16 @@ const MainDrawer = () => {
           drawerItemStyle: { display: "none" },
           drawerLabel: "Thêm thu nhập",
           headerTitle: "Thêm thu nhập",
+
+        }}
+      />
+      <Drawer.Screen
+        name="FilterTransaction"
+        component={FilterTransactionsScreen}
+        options={{
+          drawerItemStyle: { display: "none" },
+          drawerLabel: "Lọc giao dịch",
+          headerTitle: "Lọc giao dịch",
 
         }}
       />

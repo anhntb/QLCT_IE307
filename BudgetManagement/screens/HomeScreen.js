@@ -1,4 +1,5 @@
-import React, { useState, useEffect } from 'react';
+
+import React, { useState, useEffect, useCallback } from 'react'
 import {
   View,
   Text,
@@ -16,9 +17,9 @@ import { WalletContext } from '../context/WalletContext';
 import transactions from '../data/transactions';
 import { FontAwesome } from "@expo/vector-icons";
 import { initializeDatabase, fetchAllWallets } from '../db/db';
+import { useFocusEffect } from '@react-navigation/native';
 
 const HomeScreen = ({navigation}) => {
-
     const [wallets, setWallets] = useState([]);
     useEffect(() => {
         initializeDatabase();
@@ -44,6 +45,21 @@ const HomeScreen = ({navigation}) => {
 
     setOpen(!open);
    };
+
+   useFocusEffect(
+    useCallback(() => {
+      loadWallets();
+    }, [])
+  );
+
+  // const loadWallets = async () => {
+  //   try {
+  //     const result = await fetchAllWallets();
+  //     setWallets(result);
+  //   } catch (error) {
+  //     console.error('Error fetching wallets:', error);
+  //   }
+  // };
 
     const renderOption = (title, iconName, color, onPress) => {
     return (
@@ -72,7 +88,7 @@ const HomeScreen = ({navigation}) => {
     const sortedTransactions = [...transactions].sort(
       (a, b) => new Date(a.date) - new Date(b.date)
     );
-
+    
     const [filter, setFilter] = useState("all"); // Trạng thái mặc định là "Tất cả"
 
     // Lọc giao dịch dựa trên trạng thái filter

@@ -8,7 +8,6 @@ import { AuthProvider, AuthContext } from './context/AuthContext';
 import { useContext } from 'react';
 import AuthStack from './navigation/AuthStack';
 import AddExpenseScreen from './screens/AddExpenseScreen';
-import AddIncomeScreen from './screens/AddIncomeScreen';
 
 const AppNavigator = () => {
   const { isAuthenticated } = useContext(AuthContext);

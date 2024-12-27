@@ -34,11 +34,7 @@ export default function UserProfile() {
     setShowDatePicker(Platform.OS === "ios");
     setBirthDate(currentDate);
   };
-  const formattedDate = birthDate.toLocaleDateString('vi-VN', {
-    day: '2-digit',
-    month: '2-digit',
-    year: 'numeric',
-  });
+
   const { logout } = useContext(AuthContext);
 
   return (
