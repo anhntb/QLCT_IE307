@@ -35,12 +35,6 @@ export default function UserProfile() {
     setBirthDate(currentDate);
   };
 
-  const formattedDate = birthDate.toLocaleDateString('vi-VN', {
-    day: '2-digit',
-    month: '2-digit',
-    year: 'numeric',
-  });
-
   const { logout } = useContext(AuthContext);
 
   return (

@@ -8,7 +8,7 @@ const transactions = [
       date: "01/11/2024",
       wallet: "TIỀN MẶT",
       note: "",
-      icon: require("../assets/icon.png"),
+      icon: "shopping-cart",
     },
     {
       id: "2",
@@ -17,7 +17,7 @@ const transactions = [
       date: "12/12/2024",
       wallet: "VÍ MOMO",
       note: "",
-      icon: require("../assets/icon.png"),
+      icon: "money",
     },
     {
       id: "3",
@@ -26,7 +26,7 @@ const transactions = [
       date: "10/12/2024",
       wallet: "TIỀN MẶT",
       note: "",
-      icon: require("../assets/icon.png"),
+      icon: "cutlery",
     },
     {
       id: "4",
@@ -35,7 +35,25 @@ const transactions = [
       date: "11/12/2024",
       wallet: "TIỀN MẶT",
       note: "",
-      icon: require("../assets/icon.png"),
+      icon: "money",
+    },
+    {
+      id: "5",
+      amount: 5000000,
+      category: "Lương",
+      date: "11/12/2023",
+      wallet: "TIỀN MẶT",
+      note: "",
+      icon: "money",
+    },
+    {
+      id: "6",
+      amount: -25000,
+      category: "Đồ ăn/Đồ uống",
+      date: "10/12/2023",
+      wallet: "TIỀN MẶT",
+      note: "",
+      icon: "cutlery",
     },
   ];
   

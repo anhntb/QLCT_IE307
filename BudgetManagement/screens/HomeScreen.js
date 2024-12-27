@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import {
   View,
   Text,
@@ -15,14 +15,14 @@ import MonthOverview from './Overview/MonthOverview';
 import { monthlyData } from '../data/monthlyData';
 import { WalletContext } from '../context/WalletContext';
 import transactions from '../data/transactions';
-import { useNavigation } from '@react-navigation/native';
 import { FontAwesome } from "@expo/vector-icons";
-import AddExpenseScreen from './AddExpenseScreen';
-
+import { useFocusEffect } from '@react-navigation/native';
+import { fetchAllWallets } from '../db/db';
 
 const HomeScreen = ({navigation}) => {
     const month12Data = monthlyData.find((item) => item.month === 'Tháng Mười Hai 2024'); 
-    const { wallets } = useContext(WalletContext);
+    const { wallet } = useContext(WalletContext);
+    const [wallets, setWallets] = useState([]);
 
     //Floating Button
     const [open, setOpen] = useState(false);
@@ -39,6 +39,21 @@ const HomeScreen = ({navigation}) => {
 
     setOpen(!open);
    };
+
+   useFocusEffect(
+    useCallback(() => {
+      loadWallets();
+    }, [])
+  );
+
+  const loadWallets = async () => {
+    try {
+      const result = await fetchAllWallets();
+      setWallets(result);
+    } catch (error) {
+      console.error('Error fetching wallets:', error);
+    }
+  };
 
     const renderOption = (title, iconName, color, onPress) => {
     return (
@@ -84,7 +99,7 @@ const HomeScreen = ({navigation}) => {
       <Text style={styles.title}>Các tài khoản</Text>
       <View>
          <FlatList
-          data={wallets}
+          data={wallet}
           keyExtractor={(item) => item.id.toString()}
           renderItem={({ item }) => (
             <View style={styles.walletItem}>
@@ -110,7 +125,7 @@ const HomeScreen = ({navigation}) => {
               { borderRightColor: item.amount < 0 ? "red" : "green" },
             ]}
           >
-            <Image source={item.icon} style={styles.icon} />
+            <FontAwesome name={item.icon} size={22} style={styles.icon}/>
             <View style={styles.details}>
               <Text style={styles.category}>{item.category}</Text>
               <Text style={styles.wallet}>{item.wallet}</Text>
@@ -220,7 +235,7 @@ const styles = StyleSheet.create({
   icon: {
     width: 40,
     height: 40,
-    marginRight: 10,
+    paddingTop: 8,
   },
   details: {
     flex: 1,
