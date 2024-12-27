@@ -112,6 +112,10 @@ const TransactionScreen = () => {
           keyExtractor={(item) => item.toString()}
         />
       )}
+
+      <TouchableOpacity style={styles.fab}>
+        <FontAwesome name='filter' size={24} color="white" />
+      </TouchableOpacity>
     </View>
   );
 };
@@ -204,6 +208,18 @@ const styles = StyleSheet.create({
   amount: {
     fontSize: 16,
     fontWeight: 'bold',
+  },
+  fab: {
+    position: 'absolute',
+    bottom: 30,
+    right: 30,
+    backgroundColor: 'green',
+    width: 50,
+    height: 50,
+    borderRadius: 30,
+    justifyContent: 'center',
+    alignItems: 'center',
+    elevation: 5,
   },
 });
 
