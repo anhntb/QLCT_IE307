@@ -92,7 +92,7 @@ const FilterTransactionsScreen = () => {
       results = results.filter((t) => t.date.split("/")[0] === filterDay);
     }
     if (filterWallet) {
-      results = results.filter((t) => t.wallet === filterWallet);
+      results = results.filter((t) => t.walletId === filterWallet);
     }
     if (minValue) {
       results = results.filter((t) => t.amount >= Number(minValue));
@@ -107,13 +107,15 @@ const FilterTransactionsScreen = () => {
   return (
     <View style={styles.container}>
       {/* Bộ lọc Thu/Chi */}
-      <Picker selectedValue={filterType} onValueChange={(itemValue) => setFilterType(itemValue)} style={styles.picker}>
-        <Picker.Item label="Chọn loại giao dịch" value="" />
-        <Picker.Item label="Thu nhập" value="thu" />
-        <Picker.Item label="Chi tiêu" value="chi" />
-      </Picker>
-
+      <View  style={styles.pickerStyle}>
+        <Picker selectedValue={filterType} onValueChange={(itemValue) => setFilterType(itemValue)} >
+          <Picker.Item label="Chọn loại giao dịch" value="" />
+          <Picker.Item label="Thu nhập" value="thu" />
+          <Picker.Item label="Chi tiêu" value="chi" />
+        </Picker>
+      </View>
       {/* Bộ lọc Phân loại */}
+      <View  style={styles.pickerStyle}>
       <Picker selectedValue={filterCategory} onValueChange={(itemValue) => setFilterCategory(itemValue)} style={styles.picker}>
         <Picker.Item label="Chọn phân loại" value="" />
         {filterType === "thu" &&
@@ -125,15 +127,18 @@ const FilterTransactionsScreen = () => {
             <Picker.Item key={category} label={category} value={category} />
           ))}
       </Picker>
-
+      </View>
       {/* Bộ lọc Năm, Tháng*/}
+      <View  style={styles.pickerStyle}>
       <Picker selectedValue={filterYear} onValueChange={(itemValue) => setFilterYear(itemValue)} style={styles.picker}>
         <Picker.Item label="Chọn năm" value="" />
         {years.map((year) => (
           <Picker.Item key={year} label={year} value={year} />
         ))}
       </Picker>
+      </View>
 
+      <View  style={styles.pickerStyle}>
       <Picker selectedValue={filterMonth} onValueChange={(itemValue) => setFilterMonth(itemValue)} style={styles.picker}>
         <Picker.Item label="Chọn tháng" value="" />
         {months.map((month) => (
@@ -141,16 +146,18 @@ const FilterTransactionsScreen = () => {
         ))}
       </Picker>
 
-
+      </View>
       {/* Bộ lọc Ví */}
+      <View  style={styles.pickerStyle}>
       <Picker selectedValue={filterWallet} onValueChange={(itemValue) => setFilterWallet(itemValue)} style={styles.picker}>
         <Picker.Item label="Chọn ví" value="" />
         {wallets.map((wallet) => (
-          <Picker.Item key={wallet} label={wallet.name} value={wallet} />
+          <Picker.Item key={wallet} label={wallet.name} value={wallet.id} />
         ))}
       </Picker>
-
+      </View>
       {/* Bộ lọc Giá trị */}
+      <View  style={styles.pickerStyle}>
       <View style={styles.filterAmount}>
         <Text>Số tiền: </Text>
         <TextInput
@@ -171,9 +178,9 @@ const FilterTransactionsScreen = () => {
         />
       </View>
       
-
+      </View>
       {/* Nút Lọc giao dịch */}
-      <Button title="Lọc giao dịch" onPress={filterTransactions} style={styles.filterButton}/>
+      <Button title="Lọc giao dịch" onPress={filterTransactions} color="#26A071"/>
 
       {/* Hiển thị kết quả */}
       <FlatList
@@ -213,18 +220,25 @@ const FilterTransactionsScreen = () => {
 const styles = StyleSheet.create({
   container: { 
     flex: 1, 
-    paddingHorizontal: 10,
+    marginTop: 5,
+    paddingHorizontal: 15,
   },
   title: { 
     fontSize: 18, 
     fontWeight: "bold", 
     marginBottom: 10 
   },
+  pickerStyle: {
+    backgroundColor: "white",
+    borderRadius: 10,
+    marginBottom: 10,
+  },
   input: { 
-    borderWidth: 1, 
+    borderBottomWidth: 1, 
     borderColor: "#ccc", 
     padding: 8, 
     width: 100,
+    height: 45,
     marginVertical: 5, 
     borderRadius: 5 
   },
@@ -260,7 +274,8 @@ const styles = StyleSheet.create({
     alignItems: "center", 
     justifyContent: "space-between",
     paddingHorizontal: 17,
-  }
+  },
+
 
 });
 
