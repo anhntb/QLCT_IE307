@@ -1,5 +1,5 @@
 import * as SQLite from 'expo-sqlite';
-import transactions from '../data/transactions';
+// import transactions from '../data/transactions';
 
 let db;
 
@@ -12,7 +12,7 @@ export const openDatabase = async () => {
   return db;
 };
 
-// Khởi tạo bảng "wallets", "expenses", "incomes" nếu chưa tồn tại
+// Khởi tạo bảng "wallets", "transaction" nếu chưa tồn tại
 export const initializeDatabase = async () => {
   const db = await openDatabase();
   try {
@@ -33,6 +33,7 @@ export const initializeDatabase = async () => {
         date TEXT NOT NULL,
         walletId INTEGER NOT NULL,
         note TEXT,
+        icon TEXT,
         FOREIGN KEY (walletId) REFERENCES wallets(id)
       );
     `);
@@ -162,12 +163,12 @@ export const fetchAllTransactions = async () => {
 };
 
 // Thêm thu chi
-export const insertTran = async (amount, category, date, walletId, note = '') => {
+export const insertTran = async (amount, category, date, walletId, note, icon = '') => {
   const db = await openDatabase();
   try {
     const result = await db.runAsync(
-      'INSERT INTO transactions (amount, category, date, walletId, note) VALUES (?, ?, ?, ?, ?);',
-      amount, category, date, walletId, note
+      'INSERT INTO transactions (amount, category, date, walletId, note, icon) VALUES (?, ?, ?, ?, ?, ?);',
+      amount, category, date, walletId, note, icon
     );
     await updateWalletAmount(walletId, amount); // Cập nhật tiền trong ví
     

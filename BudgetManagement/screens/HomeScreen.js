@@ -1,5 +1,5 @@
 
-import React, { useState, useEffect, useCallback } from 'react
+import React, { useState, useEffect, useCallback } from 'react';
 import {
   View,
   Text,
@@ -17,26 +17,21 @@ import { monthlyData } from '../data/monthlyData';
 import { WalletContext } from '../context/WalletContext';
 import transactions from '../data/transactions';
 import { FontAwesome } from "@expo/vector-icons";
+import { useFocusEffect } from '@react-navigation/native';
 import { initializeDatabase, fetchAllWallets } from '../db/db';
 
 const HomeScreen = ({navigation}) => {
 
-import { useFocusEffect } from '@react-navigation/native';
     const month12Data = monthlyData.find((item) => item.month === 'Tháng Mười Hai 2024'); 
     const { wallet } = useContext(WalletContext);
     const [wallets, setWallets] = useState([]);
 
 
-    const [wallets, setWallets] = useState([]);
     useEffect(() => {
-        initializeDatabase();
-        loadWallets();
+      initializeDatabase();
+      loadWallets();
       }, []);
     
-      const loadWallets = async () => {
-        const allWallets = await fetchAllWallets();
-        setWallets(allWallets);
-      };
     //Floating Button
     const [open, setOpen] = useState(false);
     const [animation] = useState(new Animated.Value(0));
@@ -266,6 +261,7 @@ import { useFocusEffect } from '@react-navigation/native';
         </TouchableOpacity>
       </View>
       </View>
+
     </View>
         
     )
