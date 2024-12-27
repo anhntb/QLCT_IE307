@@ -58,7 +58,7 @@ const TransactionScreen = ({navigation}) => {
   // Lấy tên ví theo id
   const getWalletName = (walletId) => {
     const wallet = wallets.find(w => w.id === walletId);
-    return wallet ? wallet.name : 'Ví đã bị xóa';
+    return wallet ? wallet.name : '';
   };
 
   // Xóa giao dịch

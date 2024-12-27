@@ -45,6 +45,26 @@ const AddExpenseScreen = ({navigation}) => {
     }
   };
 
+  useFocusEffect(
+    useCallback(() => {
+      // Reset state to default values
+      setChecked(false);
+      setDate(new Date());
+      setNote('');
+      setAmount('');
+      setShowDatePicker(false);
+      setCategoryModalVisible(false);
+      setSelectedCategoryName("Đồ ăn/Đồ uống");
+      setSelectedCategoryIcon("cutlery");
+      setSelectedWalletId(false);
+      setSelectedWalletName("Ví");
+      setWallets([]);
+      setModalVisible(false);
+
+      // Load wallets
+      loadWallets();
+    }, [])
+    );
 
   const handleWalletPress = () => {
     setModalVisible(true);
@@ -185,11 +205,10 @@ const AddExpenseScreen = ({navigation}) => {
           </View>
         </Modal>
 
-      <View style={styles.fieldContainer}>
-        <FontAwesome name="university" size={24} color="#000" />
-        <TouchableOpacity onPress={handleWalletPress}>
+      <TouchableOpacity onPress={handleWalletPress} style={styles.fieldContainer} >
+        <FontAwesome name="university" size={24} />
         <Text style={styles.fieldText}>{selectedWalletName}</Text>
-        </TouchableOpacity>
+        
 
       {/* Wallet Modal */}
       <Modal
@@ -219,15 +238,14 @@ const AddExpenseScreen = ({navigation}) => {
           </View>
         </View>
       </Modal>
-    </View>
+      </TouchableOpacity>
 
-        <View style={styles.fieldContainer}>
-          <FontAwesome name="calendar" size={24} color="#000" />
-          <TouchableOpacity onPress={() => setShowDatePicker(true)}>
-            <Text style={styles.fieldText}>{formattedDate}</Text>
-          </TouchableOpacity>
-        </View>
-
+       
+        <TouchableOpacity onPress={() => setShowDatePicker(true)} style={styles.fieldContainer}>
+          <FontAwesome name="calendar" size={24} />
+          <Text style={styles.fieldText}>{formattedDate}</Text>
+        </TouchableOpacity>
+        
         {showDatePicker && (
           <DateTimePicker
             value={date}
