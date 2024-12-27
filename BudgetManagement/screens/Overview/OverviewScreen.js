@@ -1,9 +1,53 @@
 import React from 'react';
 import { FlatList, StyleSheet } from 'react-native';
 import MonthOverview from './MonthOverview';
-import { monthlyData } from '../../data/monthlyData';
+import transactions from '../../data/transactions';
+import { format, subMonths } from "date-fns";
 
 const OverviewScreen = () => {
+  // Hàm chuyển đổi ngày từ "DD/MM/YYYY" sang "YYYY-MM-DD"
+  const convertDateFormat = (dateString) => {
+    const [day, month, year] = dateString.split("/");
+    return `${year}-${month}-${day}`; // Chuyển sang định dạng hợp lệ
+  };
+
+  // Hàm tính monthlyData
+  const calculateMonthlyData = (transactions) => {
+    const today = new Date();
+    const months = Array.from({ length: 24 }, (_, i) =>
+      format(subMonths(today, i), "MM/yyyy")
+    );
+
+    // Initialize monthlyData với 4 tháng gần nhất
+    const monthlyData = months.map((month) => ({
+      month,
+      income: 0,
+      expense: 0,
+    }));
+
+    // Group transactions by month
+    transactions.forEach((transaction) => {
+      // Chuyển đổi định dạng ngày
+      const transactionDate = new Date(convertDateFormat(transaction.date));
+      const transactionMonth = format(transactionDate, "MM/yyyy");
+
+      const monthData = monthlyData.find((data) => data.month === transactionMonth);
+      if (monthData) {
+        if (transaction.amount > 0) {
+          monthData.income += transaction.amount;
+        } else {
+          monthData.expense += transaction.amount;
+        }
+      }
+    });
+
+    return monthlyData;
+  };
+
+  // Tính monthlyData
+  const monthlyData = calculateMonthlyData(transactions);
+
+
   return (
     <FlatList
       data={monthlyData}

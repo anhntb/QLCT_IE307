@@ -12,14 +12,12 @@ import {
 } from 'react-native';
 import { useContext } from 'react';
 import MonthOverview from './Overview/MonthOverview';
-import { monthlyData } from '../data/monthlyData';
 import { WalletContext } from '../context/WalletContext';
 import transactions from '../data/transactions';
 import { FontAwesome } from "@expo/vector-icons";
 import { initializeDatabase, fetchAllWallets } from '../db/db';
 
 const HomeScreen = ({navigation}) => {
-    const month12Data = monthlyData.find((item) => item.month === 'Tháng Mười Hai 2024'); 
 
     const [wallets, setWallets] = useState([]);
     useEffect(() => {

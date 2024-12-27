@@ -2,6 +2,7 @@ import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 import { PieChart } from 'react-native-chart-kit';
 import { Dimensions } from 'react-native';
+import { isDate } from 'date-fns';
 
 const screenWidth = Dimensions.get('window').width;
 
@@ -47,7 +48,12 @@ const MonthOverview = ({ data, isHideRemainder }) => {
 
   return (
     <View style={styles.itemContainer}>
-      <Text style={styles.monthText}>{data.month}</Text>
+      {data.month === 'Tổng thu - chi' ? (
+        <Text style={styles.monthText}>{data.month}</Text>
+      ) : (
+        <Text style={styles.monthText}>Tháng {data.month}</Text>
+      )}
+      
       <View style={styles.rowContainer}>
         <PieChart
           data={chartData}
@@ -119,6 +125,7 @@ const styles = StyleSheet.create({
   totalText: {
     fontSize: 14,
     fontWeight: 'bold',
+    color: "green",
   },
 });
 

@@ -77,7 +77,7 @@ const TransactionScreen = () => {
               <View style={styles.monthHeader}>
                 <Text style={styles.monthTitle}>Tháng {month}/{currentYear}</Text>
                 <Text style={styles.monthTotal}>
-                  Tổng cộng:{" "}
+                  Tổng thu:{" "}
                   {calculateTotal(groupedTransactions[month]).toLocaleString('vi-VN')} đ
                 </Text>
               </View>

@@ -55,6 +55,15 @@ const transactions = [
       note: "",
       icon: "cutlery",
     },
+    {
+      id: "7",
+      amount: -25000,
+      category: "Đồ ăn/Đồ uống",
+      date: "10/11/2024",
+      wallet: "TIỀN MẶT",
+      note: "",
+      icon: "cutlery",
+    },
   ];
   
   export default transactions;
