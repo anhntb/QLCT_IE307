@@ -68,7 +68,11 @@ const FilterTransactionsScreen = () => {
       }
     };
     
-  const years = ["2024", "2023", "2022", "2021", "2020" ];
+  const currentYear = new Date().getFullYear();
+
+    // Tạo danh sách các năm từ năm hiện tại trở về quá khứ (hoặc có thể thêm năm tới)
+  const years = Array.from({ length: 10 }, (_, index) => (currentYear - index).toString());
+
   const months = ["01", "02", "03", "04", "05", "06", "07", "08", "09", "10", "11", "12"];
 
   const getWalletName = (walletId) => {
@@ -87,22 +91,19 @@ const FilterTransactionsScreen = () => {
       results = results.filter((t) => t.category === filterCategory);
     }
     if (filterYear) {
-      results = results.filter((t) => t.date.endsWith(filterYear));
+      results = results.filter((t) => t.date.startsWith(filterYear));
     }
     if (filterMonth) {
-      results = results.filter((t) => t.date.split("/")[1] === filterMonth);
-    }
-    if (filterDay) {
-      results = results.filter((t) => t.date.split("/")[0] === filterDay);
+      results = results.filter((t) => t.date.split("-")[1] === filterMonth); 
     }
     if (filterWallet) {
       results = results.filter((t) => t.walletId === filterWallet);
     }
     if (minValue) {
-      results = results.filter((t) => t.amount >= Number(minValue));
+      results = results.filter((t) => Math.abs(t.amount) > Number(minValue));
     }
     if (maxValue) {
-      results = results.filter((t) => t.amount <= Number(maxValue));
+      results = results.filter((t) => Math.abs(t.amount) < Number(maxValue));
     }
 
     setFilteredTransactions(results); // Cập nhật kết quả

@@ -24,7 +24,7 @@ const parseDate = (dateString) => {
 const TransactionScreen = ({navigation}) => {
   const [wallets, setWallets] = useState([]);
   const [transactions, setTransactions] = useState([]);
-  const [currentYear, setCurrentYear] = useState(2024); // Năm hiện tại
+  const [currentYear, setCurrentYear] = useState(new Date().getFullYear()); // Năm hiện tại
   
   useFocusEffect(
     useCallback(() => {

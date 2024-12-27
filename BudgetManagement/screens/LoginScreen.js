@@ -26,7 +26,6 @@ const LoginScreen = () => {
   return (
     <View style={styles.container}>
       <View style={styles.backgroundDecorate}> 
-      
       </View>
       <Image style={styles.logo} source={require('../assets/logo.png')}/>
       <Text style={styles.title}>Đăng nhập</Text>
