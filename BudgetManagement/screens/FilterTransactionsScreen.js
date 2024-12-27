@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useCallback} from "react";
 import { View, Text, TextInput, Button, FlatList, StyleSheet, TouchableOpacity } from "react-native";
 import { Picker } from "@react-native-picker/picker"; // Thư viện chọn dropdown (npm install @react-native-picker/picker)
-import { initializeDatabase, fetchAllWallets, fetchAllTransactions } from "../db/db";
+import { initializeDatabase, fetchAllWallets, fetchAllTransactions, getWalletName } from "../db/db";
 import { FontAwesome } from "@expo/vector-icons";
 import { useFocusEffect } from '@react-navigation/native';
 
@@ -71,6 +71,10 @@ const FilterTransactionsScreen = () => {
   const years = ["2024", "2023", "2022", "2021", "2020" ];
   const months = ["01", "02", "03", "04", "05", "06", "07", "08", "09", "10", "11", "12"];
 
+  const getWalletName = (walletId) => {
+    const wallet = wallets.find(w => w.id === walletId);
+    return wallet ? wallet.name : 'Ví đã bị xóa';
+  };
   // Hàm lọc giao dịch
   const filterTransactions = () => {
 
@@ -191,19 +195,19 @@ const FilterTransactionsScreen = () => {
         <View
           style={[
             styles.transaction,
-            { borderRightColor: item.amount < 0 ? "red" : "green" },
+            { borderRightColor: item.amount < 0 ? "#F7637D" : "#26A071" },
           ]}
         >
           <FontAwesome name={item.icon} size={22} style={styles.icon}/>
           <View style={styles.details}>
             <Text style={styles.category}>{item.category}</Text>
-            <Text style={styles.wallet}>{item.wallet}</Text>
+            <Text style={styles.wallet}>{getWalletName(item.walletId)}</Text>
           </View>
           <View style={styles.rightSection}>
             <Text
               style={[
                 styles.amount,
-                { color: item.amount < 0 ? "red" : "green" },
+                { color: item.amount < 0 ? "#F7637D" : "#26A071" },
               ]}
             >
               {item.amount.toLocaleString("vi-VN")} đ

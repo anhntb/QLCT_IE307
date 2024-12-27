@@ -1,15 +1,32 @@
-import React from 'react';
+import React, {useState, useEffect, useCallback} from 'react';
 import { FlatList, StyleSheet } from 'react-native';
 import MonthOverview from './MonthOverview';
-import transactions from '../../data/transactions';
+import { useFocusEffect } from '@react-navigation/native';
+import { fetchAllTransactions } from '../../db/db';
+
 import { format, subMonths } from "date-fns";
 
 const OverviewScreen = () => {
-  // Hàm chuyển đổi ngày từ "DD/MM/YYYY" sang "YYYY-MM-DD"
-  const convertDateFormat = (dateString) => {
-    const [day, month, year] = dateString.split("/");
-    return `${year}-${month}-${day}`; // Chuyển sang định dạng hợp lệ
+  const [transactions, setTransactions] = useState([]);
+  useFocusEffect(
+    useCallback(() => {
+      loadTransactions();
+    }, [])
+  );
+    
+  useEffect(() => {
+    loadTransactions();
+  }, []);
+      
+  const loadTransactions = async () => {
+    try {
+      const result = await fetchAllTransactions();
+      setTransactions(result);
+    } catch (error) {
+      console.error('Error fetching transactions:', error);
+    }
   };
+
 
   // Hàm tính monthlyData
   const calculateMonthlyData = (transactions) => {
@@ -28,10 +45,11 @@ const OverviewScreen = () => {
     // Group transactions by month
     transactions.forEach((transaction) => {
       // Chuyển đổi định dạng ngày
-      const transactionDate = new Date(convertDateFormat(transaction.date));
+      const transactionDate = new Date(transaction.date);
       const transactionMonth = format(transactionDate, "MM/yyyy");
 
       const monthData = monthlyData.find((data) => data.month === transactionMonth);
+
       if (monthData) {
         if (transaction.amount > 0) {
           monthData.income += transaction.amount;

@@ -8,10 +8,12 @@ import {
   Image,
   Alert,
 } from 'react-native';
+
 //import transactions from '../data/transactions';
 import { FontAwesome } from "@expo/vector-icons";
 import { fetchAllTransactions, fetchAllWallets, deleteTran } from '../db/db';
 import { useFocusEffect } from '@react-navigation/native';
+
 
 
 const parseDate = (dateString) => {
@@ -132,7 +134,10 @@ const TransactionScreen = ({navigation}) => {
 
       {/* Hiển thị danh sách giao dịch */}
       {Object.keys(groupedTransactions).length === 0 ? (
-        <Text style={styles.noTransactions}>Không tìm thấy giao dịch</Text>
+        <View style={styles.notFoundContainer}>
+          <Text style={styles.noTransactions}>Không tìm thấy giao dịch</Text>
+          <Image style={styles.notFoundImage} source={require('../assets/notfound.webp')}/>
+        </View>
       ) : (
         <FlatList
           data={Object.keys(groupedTransactions).sort((a, b) => b - a)} // Sắp xếp tháng giảm dần
@@ -151,7 +156,7 @@ const TransactionScreen = ({navigation}) => {
               {groupedTransactions[month].map((transaction) => (
                 <View
                   key={transaction.id} // Hoặc bất kỳ giá trị nào là duy nhất 
-                  style={[styles.transaction, {borderColor: transaction.amount < 0 ? 'red' : 'green' }]}  
+                  style={[styles.transaction, {borderColor: transaction.amount < 0 ? '#F7637D' : '#26A071' }]}  
                 >
                 {/* <Image source={transaction.icon} style={styles.icon} /> */}
                 <FontAwesome name={transaction.icon} size={24} style={styles.icon}/>
@@ -163,7 +168,7 @@ const TransactionScreen = ({navigation}) => {
                   <Text
                     style={[
                       styles.amount,
-                      { color: transaction.amount < 0 ? 'red' : 'green' },
+                      { color: transaction.amount < 0 ? '#F7637D' : '#26A071' },
                     ]}
                   >
                     {transaction.amount.toLocaleString('vi-VN')} đ
@@ -197,7 +202,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: "space-between",
     alignItems: 'center',
-    backgroundColor: "#007BFF",
+    backgroundColor: "#065A4A",
     padding: 5, 
     paddingHorizontal:20,
 
@@ -229,7 +234,7 @@ const styles = StyleSheet.create({
     padding: 10,
     borderRadius: 8,
     marginVertical: 10,
-    backgroundColor: "#007BFF",
+    backgroundColor: "#26A071",
   },
   monthTitle: {
     fontSize: 16 ,
@@ -258,9 +263,7 @@ const styles = StyleSheet.create({
     padding: 5,
     marginLeft: 10,
     marginRight: 10,
-    paddingLeft: 20,
-    paddingRight: 20,
-    
+    paddingHorizontal: 10,
   },
   details: {
     flex: 1,
@@ -281,7 +284,7 @@ const styles = StyleSheet.create({
     position: 'absolute',
     bottom: 30,
     right: 30,
-    backgroundColor: 'green',
+    backgroundColor: '#26A071',
     width: 50,
     height: 50,
     borderRadius: 30,
@@ -289,6 +292,18 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     elevation: 5,
   },
+  delIcon:{
+    marginLeft: 6,
+  },
+  notFoundContainer: {
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  notFoundImage:{
+    marginTop: 100,
+    width: 300,
+    height: 300,
+  }
 });
 
 export default TransactionScreen;

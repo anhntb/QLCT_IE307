@@ -23,14 +23,14 @@ const MonthOverview = ({ data, isHideRemainder }) => {
         {
           name: 'Thu nhập',
           population: data.income > 0 ? data.income : 0,
-          color: '#00E1A1',
+          color: '#26A071',
           legendFontColor: '#7F7F7F',
           legendFontSize: 12,
         },
         {
           name: 'Chi phí',
           population: Math.abs(data.expense),
-          color: '#e95449',
+          color: '#F7637D',
           legendFontColor: '#7F7F7F',
           legendFontSize: 12,
         },
@@ -114,18 +114,18 @@ const styles = StyleSheet.create({
   },
   incomeText: {
     fontSize: 14,
-    color: 'green',
+    color: '#26A071',
     marginBottom: 5,
   },
   expenseText: {
     fontSize: 14,
-    color: 'red',
+    color: '#F7637D',
     marginBottom: 5,
   },
   totalText: {
     fontSize: 14,
     fontWeight: 'bold',
-    color: "green",
+    color: "#26A071",
   },
 });
 

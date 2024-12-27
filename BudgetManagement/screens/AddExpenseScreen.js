@@ -284,12 +284,12 @@ const styles = StyleSheet.create({
   header: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#d32f2f',
+    backgroundColor: '#F7637D',
     padding: 16,
   },
   headerText: {
     color: '#fff',
-    fontSize: 23,
+    fontSize: 20,
     fontWeight: 'bold',
     marginLeft: 16,
   },
@@ -300,7 +300,7 @@ const styles = StyleSheet.create({
     borderBottomWidth: 1,
     borderBottomColor: '#ccc',
     marginBottom: 16,
-    fontSize: 23,
+    fontSize: 18,
   },
   categoryContainer: {
     flexDirection: 'row',
@@ -308,12 +308,12 @@ const styles = StyleSheet.create({
     marginBottom: 16,
   },
   categoryText: {
-    fontSize: 20,
+    fontSize: 18,
     marginLeft: 8,
     flex: 1,
   },
   addButton: {
-    backgroundColor: '#d32f2f',
+    backgroundColor: '#F7637D',
     padding: 8,
     borderRadius: 4,
   },
@@ -347,7 +347,7 @@ const styles = StyleSheet.create({
     marginLeft: 15,
   },
   modalCloseButton: {
-    backgroundColor: '#d32f2f',
+    backgroundColor: '#F7637D',
     padding: 12,
     borderRadius: 8,
     marginTop: 16,
@@ -368,7 +368,7 @@ const styles = StyleSheet.create({
     marginBottom: 16,
   },
   fieldText: {
-    fontSize: 20,
+    fontSize: 18,
     marginLeft: 8,
     borderBottomWidth: 1,
     borderBottomColor: '#e8e8e8',
@@ -384,7 +384,7 @@ const styles = StyleSheet.create({
     marginBottom: 16,
   },
   switchText: {
-    fontSize: 20,
+    fontSize: 18,
   },
   footer: {
     flexDirection: 'row',
@@ -397,7 +397,7 @@ const styles = StyleSheet.create({
   cancelButton: {
     flex: 1,
     marginRight: 8,
-    backgroundColor: '#d32f2f',
+    backgroundColor: '#F7637D ',
     padding: 16,
     borderRadius: 8,
     alignItems: 'center',
@@ -405,14 +405,14 @@ const styles = StyleSheet.create({
   saveButton: {
     flex: 1,
     marginLeft: 8,
-    backgroundColor: '#d32f2f',
+    backgroundColor: '#4BBF87',
     padding: 16,
     borderRadius: 8,
     alignItems: 'center',
   },
   buttonText: {
     color: '#fff',
-    fontSize: 18,
+    fontSize: 16,
     fontWeight: 'bold',
   },
 });

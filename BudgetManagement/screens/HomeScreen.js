@@ -1,5 +1,5 @@
 
-import React, { useState, useEffect, useCallback } from 'react'
+import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import {
   View,
   Text,
@@ -8,27 +8,53 @@ import {
   TouchableOpacity,
   Image,
   ScrollView,
-  SectionList
+  Animated,
+  SafeAreaView,
 } from 'react-native';
-import { useContext } from 'react';
 import MonthOverview from './Overview/MonthOverview';
-import { WalletContext } from '../context/WalletContext';
 import transactions from '../data/transactions';
 import { FontAwesome } from "@expo/vector-icons";
-import { initializeDatabase, fetchAllWallets } from '../db/db';
 import { useFocusEffect } from '@react-navigation/native';
+import { initializeDatabase, fetchAllWallets, fetchAllTransactions, getWalletName} from '../db/db';
 
 const HomeScreen = ({navigation}) => {
+
     const [wallets, setWallets] = useState([]);
-    useEffect(() => {
-        initializeDatabase();
-        loadWallets();
-      }, []);
+    const [transactions, setTransactions] = useState([]);
+
+    useFocusEffect(
+        useCallback(() => {
+          loadTransactions();
+          loadWallets();
+        }, [])
+      );
     
-      const loadWallets = async () => {
-        const allWallets = await fetchAllWallets();
-        setWallets(allWallets);
-      };
+    useEffect(() => {
+      loadTransactions();
+    }, []);
+      
+    const loadTransactions = async () => {
+      try {
+        const result = await fetchAllTransactions();
+        setTransactions(result);
+      } catch (error) {
+        console.error('Error fetching transactions:', error);
+      }
+    };
+    
+    const loadWallets = async () => {
+      try {
+        const result = await fetchAllWallets();
+        setWallets(result);
+      } catch (error) {
+        console.error('Error fetching wallets:', error);
+      }
+    };
+    // Lấy tên ví theo id
+    const getWalletName = (walletId) => {
+      const wallet = wallets.find(w => w.id === walletId);
+      return wallet ? wallet.name : 'Ví đã bị xóa';
+    };
     //Floating Button
     const [open, setOpen] = useState(false);
     const [animation] = useState(new Animated.Value(0));
@@ -45,20 +71,6 @@ const HomeScreen = ({navigation}) => {
     setOpen(!open);
    };
 
-   useFocusEffect(
-    useCallback(() => {
-      loadWallets();
-    }, [])
-  );
-
-  // const loadWallets = async () => {
-  //   try {
-  //     const result = await fetchAllWallets();
-  //     setWallets(result);
-  //   } catch (error) {
-  //     console.error('Error fetching wallets:', error);
-  //   }
-  // };
 
     const renderOption = (title, iconName, color, onPress) => {
     return (
@@ -82,12 +94,21 @@ const HomeScreen = ({navigation}) => {
       },
     ],
     };
+    const last7DaysTransactions = useMemo(() => {
+      const currentDate = new Date(); // Ngày hiện tại
+      const sevenDaysAgo = new Date();
+      sevenDaysAgo.setDate(currentDate.getDate() - 7); // Ngày cách đây 7 ngày
   
+      return transactions.filter((transaction) => {
+        const transactionDate = new Date(transaction.date); // Chuyển date của giao dịch thành dạng Date
+        return transactionDate >= sevenDaysAgo && transactionDate <= currentDate; // Lọc trong khoảng thời gian
+      });
+    }, [transactions]);
     // Sắp xếp giao dịch theo thứ tự thời gian (từ sớm đến trễ)
-    const sortedTransactions = [...transactions].sort(
-      (a, b) => new Date(a.date) - new Date(b.date)
+    const sortedTransactions = [...last7DaysTransactions].sort(
+      (a, b) => new Date(b.date) - new Date(a.date)
     );
-    
+
     const [filter, setFilter] = useState("all"); // Trạng thái mặc định là "Tất cả"
 
     // Lọc giao dịch dựa trên trạng thái filter
@@ -97,6 +118,7 @@ const HomeScreen = ({navigation}) => {
       if (filter === "expense") return item.amount < 0;
     });
 
+    
     const calculateTotals = () => {
       let totalIncome = 0;
       let totalExpense = 0;
@@ -123,18 +145,18 @@ const HomeScreen = ({navigation}) => {
     }
     return(
     // Sơ lược
-
-    <ScrollView style={styles.homeContainer}> 
+    <View style={{flex: 1,}}>
+    <View style={styles.homeContainer}> 
     <TouchableOpacity style={styles.componentContainer} onPress={() => navigation.navigate("Overview")}>
       <Text style={styles.title}>Sơ lược</Text>
       <View style={styles.overviewContainer}>
-        {month12Data && <MonthOverview data={month12Data} />}
+        {overviewData && <MonthOverview data={overviewData} isHideRemainder={false} />}
       </View>
     </TouchableOpacity>
 
     {/* Các ví */}
     <TouchableOpacity style={styles.componentContainer} onPress={() => navigation.navigate("Wallets")}>
-      <Text style={styles.title}>Các tài khoản</Text>
+      <Text style={styles.title}>Ví của tôi</Text>
       <View>
          <FlatList
           data={wallets}
@@ -150,41 +172,116 @@ const HomeScreen = ({navigation}) => {
     </TouchableOpacity>
     
     {/* Các giao dịch */}
-    <TouchableOpacity style={styles.componentContainer} onPress={() => navigation.navigate("Transaction")}>
-      <Text style={styles.title}>Các giao dịch</Text>
-      <View>
-        <FlatList
-        data={sortedTransactions}
-        keyExtractor={(item) => item.id}
-        renderItem={({ item }) => (
-          <View
-            style={[
-              styles.transaction,
-              { borderRightColor: item.amount < 0 ? "red" : "green" },
-            ]}
-          >
-            <Image source={item.icon} style={styles.icon} />
-            <View style={styles.details}>
-              <Text style={styles.category}>{item.category}</Text>
-              <Text style={styles.wallet}>{item.wallet}</Text>
-            </View>
-            <View style={styles.rightSection}>
-              <Text
-                style={[
-                  styles.amount,
-                  { color: item.amount < 0 ? "red" : "green" },
-                ]}
-              >
-                {item.amount.toLocaleString("vi-VN")} đ
-              </Text>
-              <Text style={styles.date}>{item.date}</Text>
-            </View>
-          </View>
-        )}
-      />
+    <View style={styles.componentContainer} >
+      <Text style={styles.title} onPress={() => navigation.navigate("Transaction")}>Các giao dịch 7 ngày qua</Text>
+
+      {/* Tab */} 
+      <View style={styles.tabContainer}>
+        <TouchableOpacity
+          style={[
+            styles.tabButton,
+            filter === "all" && styles.activeTabButton,
+          ]}
+          onPress={() => setFilter("all")}
+        >
+          <Text style={[styles.tabText, filter === "all" && styles.activeTabText]}>
+            Tất cả
+          </Text>
+        </TouchableOpacity>
+
+        <TouchableOpacity
+          style={[
+            styles.tabButton,
+            filter === "income" && styles.activeTabButton,
+          ]}
+          onPress={() => setFilter("income")}
+        >
+          <Text style={[styles.tabText, filter === "income" && styles.activeTabText]}>
+            Thu
+          </Text>
+        </TouchableOpacity>
+
+        <TouchableOpacity
+          style={[
+            styles.tabButton,
+            filter === "expense" && styles.activeTabButton,
+          ]}
+          onPress={() => setFilter("expense")}
+        >
+          <Text style={[styles.tabText, filter === "expense" && styles.activeTabText]}>
+            Chi
+          </Text>
+        </TouchableOpacity>
       </View>
-    </TouchableOpacity>
-    </ScrollView>
+
+      <FlatList
+      data={filteredTransactions}
+      keyExtractor={(item) => item.id}
+      style={styles.transactionsList}
+      renderItem={({ item }) => (
+      
+        <TouchableOpacity onPress={() => navigation.navigate("Transaction")}
+          style={[
+            styles.transaction,
+            { borderRightColor: item.amount < 0 ? "#F7637D" : "#26A071" },
+          ]}
+        >
+          <FontAwesome name={item.icon} size={22} style={styles.icon}/>
+          <View style={styles.details}>
+            <Text style={styles.category}>{item.category}</Text>
+            <Text style={styles.wallet}>{getWalletName(item.walletId)}</Text>
+          </View>
+          <View style={styles.rightSection}>
+            <Text
+              style={[
+                styles.amount,
+                { color: item.amount < 0 ? "#F7637D" : "#26A071" },
+              ]}
+            >
+              {item.amount.toLocaleString("vi-VN")} đ
+            </Text>
+            <Text style={styles.date}>{item.date}</Text>
+          </View>
+        </TouchableOpacity>
+      )}
+    />
+    </View>
+      
+ 
+   
+    </View>
+    <View style={{justifyContent: 'flex-end'}}>
+      <View style={styles.optionsContainer}>
+        {open &&
+          renderOption('Chuyển tiền', 'exchange', '#6B82FE', () =>{
+            navigation.navigate("Wallets");
+            setOpen(!open);
+          }
+            
+          )}
+        {open &&
+          renderOption('Thu nhập', 'plus', '#26A071', () =>{
+            navigation.navigate("AddIncome");
+            setOpen(!open);
+          }
+          )}
+        {open &&
+          renderOption('Chi phí', 'minus', '#F7637D', () =>{
+            navigation.navigate("AddExpense");
+            setOpen(!open);
+          }
+          )}
+      </View>
+      
+      {/* Floating Action Button */}
+      <View style={{flex: 1 }}>
+        <TouchableOpacity style={styles.fab} onPress={toggleMenu}>
+          <FontAwesome name={open ? 'close' : 'plus'} size={24} color="white" />
+        </TouchableOpacity>
+      </View>
+      </View>
+
+    </View>
         
     )
 }
@@ -197,13 +294,12 @@ const styles = StyleSheet.create({
     backgroundColor: "#f5f5f5",
   },
   componentContainer: {
-    marginBottom: 20,
-
+    marginBottom: 8,
   },
   title: {
     fontWeight: "bold",
     fontSize: 20,
-    marginBottom: 2,
+    marginBottom: 5,
     textAlign: "center",
   },
 
@@ -222,7 +318,7 @@ const styles = StyleSheet.create({
   },
   walletAmount: {
     fontSize: 16,
-    color: "green",
+    color: "#26A071",
     fontWeight: "bold",
   },
   transaction: {
@@ -232,15 +328,47 @@ const styles = StyleSheet.create({
     borderRightWidth: 3,
     borderRadius: 8,
     marginBottom: 5,
-    padding: 5,
-    paddingLeft: 10,
-    paddingRight: 10,
+    padding: 2,
+    paddingHorizontal: 10,
     elevation: 1,
+  },
+  transactionsList:{
+    height: 160,
+  },
+  tabContainer: {
+    flexDirection: "row",
+    justifyContent: "space-around",
+    marginBottom: 16,
+  },
+  tabButton: {
+    paddingVertical: 3,
+    borderWidth: 1,
+    height: 35,
+    width: 100,
+    alignItems: "center",
+    paddingHorizontal: 10,
+    borderColor: "#26A071",
+    borderRadius: 8,
+    backgroundColor: "white",
+  },
+
+  activeTabButton: {
+    backgroundColor: "#26A071",
+  },
+  tabText: {
+    fontSize: 16,
+    fontWeight: "bold",
+    textAlign: "center",
+    color: "#26A071",
+  },
+  activeTabText: {
+    color: "white",
+    fontWeight: "bold",
   },
   icon: {
     width: 40,
     height: 40,
-    marginRight: 10,
+    paddingTop: 8,
   },
   details: {
     flex: 1,
@@ -249,4 +377,62 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: "bold",
   },
+  titleStyle: {
+    fontSize: 24,
+    fontWeight: 'bold',
+    textAlign: 'center',
+    marginBottom: 10,
+  },
+  linkStyle: {
+    fontSize: 16,
+    textAlign: 'center',
+  },
+  fab: {
+    position: 'absolute',
+    bottom: 30,
+    right: 30,
+    backgroundColor: '#065A4A',
+    width: 50,
+    height: 50,
+    borderRadius: 30,
+    justifyContent: 'center',
+    alignItems: 'center',
+    elevation: 5,
+  },
+  optionsContainer: {
+    position: 'absolute',
+    bottom: 100,
+    right: 30,
+  },
+  actionButtonContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'flex-end',
+  },
+  actionButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginVertical: 10,
+    paddingVertical: 10,
+    paddingHorizontal: 15,
+    borderRadius: 50,
+    elevation: 3,
+    width: 50,
+    height: 50,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.3,
+    shadowRadius: 4,
+    marginLeft: 10,
+  },
+  actionButtonText: {
+    color: 'white',
+    fontWeight: "bold",
+    fontSize: 16,
+    backgroundColor: '#26A071',
+    borderRadius: 5,
+    padding: 5,
+  },
+
 })
