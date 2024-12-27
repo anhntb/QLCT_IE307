@@ -10,10 +10,11 @@ SafeAreaView,
   Modal,
   FlatList,
   ScrollView,
+  Alert,
 } from 'react-native';
 import { FontAwesome } from '@expo/vector-icons';
 import DateTimePicker from '@react-native-community/datetimepicker';
-import { insertExpense, fetchAllWallets, initializeDatabase } from '../db/db';
+import { fetchAllWallets, initializeDatabase, insertTran } from '../db/db';
 import { useFocusEffect } from '@react-navigation/native';
 
 
@@ -25,7 +26,8 @@ const AddExpenseScreen = ({navigation}) => {
   const [showDatePicker, setShowDatePicker] = useState(false);
   const [categoryModalVisible, setCategoryModalVisible] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState("Đồ ăn/Đồ uống");
-  const [selectedWalletId, setSelectedWalletId] = useState("Ví");
+  const [selectedWalletId, setSelectedWalletId] = useState(false);
+  const [selectedWalletName, setSelectedWalletName] = useState("Ví");
   const [wallets, setWallets] = useState([]);
   const [modalVisible, setModalVisible] = useState(false);
 
@@ -49,6 +51,7 @@ const AddExpenseScreen = ({navigation}) => {
 
   const handleWalletSelect = (wallet) => {
     setSelectedWalletId(wallet.id);
+    setSelectedWalletName(wallet.name);
     setModalVisible(false);
   };
 
@@ -66,10 +69,17 @@ const AddExpenseScreen = ({navigation}) => {
   const handleSaveExpense = async () => {
     try {
       if (!amount || !selectedCategory || !date || !selectedWalletId) {
-        console.error('Please fill in all fields');
+        Alert.alert('Error', 'Vui lòng điền đủ thông tin!');
         return;
       }
-      await insertExpense(amount, selectedCategory, date, selectedWalletId, note);
+      
+      const selectedWallet = wallets.find(wallet => wallet.id === selectedWalletId);
+      if (selectedWallet && parseFloat(amount) > selectedWallet.amount) {
+        Alert.alert('Error', 'Số dư không đủ để thực hiện giao dịch!');
+        return;
+      }
+
+      await insertTran(-amount, selectedCategory, date.toISOString().split('T')[0], selectedWalletId, note);
       await loadWallets(); // Reload dữ liệu ví sau khi lưu chi tiêu
       navigation.navigate('Home'); // Điều hướng trở lại màn hình Home
     } catch (error) {
@@ -173,7 +183,7 @@ const AddExpenseScreen = ({navigation}) => {
       <View style={styles.fieldContainer}>
         <FontAwesome name="university" size={24} color="#000" />
         <TouchableOpacity onPress={handleWalletPress}>
-        <Text style={styles.fieldText}>{selectedWalletId}</Text>
+        <Text style={styles.fieldText}>{selectedWalletName}</Text>
         </TouchableOpacity>
 
       {/* Wallet Modal */}
@@ -396,10 +406,6 @@ const styles = StyleSheet.create({
     color: '#fff',
     fontSize: 18,
     fontWeight: 'bold',
-  },
-  walletItem: {
-    padding: 10,
-    fontSize: 18,
   },
 });
 
