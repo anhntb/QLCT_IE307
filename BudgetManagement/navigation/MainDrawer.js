@@ -111,6 +111,7 @@ const MainDrawer = () => {
         options={{
           drawerItemStyle: { display: "none" },
           drawerLabel: "Thêm chi tiêu",
+          headerTitle: "Thêm chi tiêu",
         }}
       />
       <Drawer.Screen
@@ -119,6 +120,8 @@ const MainDrawer = () => {
         options={{
           drawerItemStyle: { display: "none" },
           drawerLabel: "Thêm thu nhập",
+          headerTitle: "Thêm thu nhập",
+
         }}
       />
     </Drawer.Navigator>
