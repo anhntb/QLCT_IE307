@@ -38,7 +38,7 @@ export default function WalletsScreen() {
   
   useFocusEffect(
     useCallback(() => {
-      loadWallets();
+    loadWallets();
     }, [])
   );
 
