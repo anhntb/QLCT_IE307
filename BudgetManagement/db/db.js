@@ -22,6 +22,7 @@ export const initializeDatabase = async () => {
         amount REAL NOT NULL,
         note TEXT
       );
+      
     `);
     console.log('Database initialized: wallets table created');
   } catch (error) {

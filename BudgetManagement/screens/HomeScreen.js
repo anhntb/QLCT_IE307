@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   View,
   Text,
@@ -16,12 +16,21 @@ import { monthlyData } from '../data/monthlyData';
 import { WalletContext } from '../context/WalletContext';
 import transactions from '../data/transactions';
 import { FontAwesome } from "@expo/vector-icons";
-
+import { initializeDatabase, fetchAllWallets } from '../db/db';
 
 const HomeScreen = ({navigation}) => {
     const month12Data = monthlyData.find((item) => item.month === 'Tháng Mười Hai 2024'); 
-    const { wallets } = useContext(WalletContext);
 
+    const [wallets, setWallets] = useState([]);
+    useEffect(() => {
+        initializeDatabase();
+        loadWallets();
+      }, []);
+    
+      const loadWallets = async () => {
+        const allWallets = await fetchAllWallets();
+        setWallets(allWallets);
+      };
     //Floating Button
     const [open, setOpen] = useState(false);
     const [animation] = useState(new Animated.Value(0));
@@ -65,21 +74,54 @@ const HomeScreen = ({navigation}) => {
     const sortedTransactions = [...transactions].sort(
       (a, b) => new Date(a.date) - new Date(b.date)
     );
+
+    const [filter, setFilter] = useState("all"); // Trạng thái mặc định là "Tất cả"
+
+    // Lọc giao dịch dựa trên trạng thái filter
+    const filteredTransactions = sortedTransactions.filter((item) => {
+      if (filter === "all") return true;
+      if (filter === "income") return item.amount > 0;
+      if (filter === "expense") return item.amount < 0;
+    });
+
+    const calculateTotals = () => {
+      let totalIncome = 0;
+      let totalExpense = 0;
   
+      transactions.forEach((transaction) => {
+        if (transaction.amount > 0) {
+          totalIncome += transaction.amount;
+        } else {
+          totalExpense += transaction.amount;
+        }
+      });
+  
+      return { totalIncome, totalExpense };
+    };
+  
+    const { totalIncome, totalExpense } = calculateTotals();
+    const totalAmount = wallets.reduce((sum, wallet) => sum + wallet.amount, 0);
+
+    const overviewData = {
+      month: 'Tổng thu - chi',
+      income: totalIncome,
+      expense: totalExpense,
+      total: totalAmount
+    }
     return(
     // Sơ lược
     <View style={{flex: 1,}}>
-    <ScrollView style={styles.homeContainer}> 
+    <View style={styles.homeContainer}> 
     <TouchableOpacity style={styles.componentContainer} onPress={() => navigation.navigate("Overview")}>
       <Text style={styles.title}>Sơ lược</Text>
       <View style={styles.overviewContainer}>
-        {month12Data && <MonthOverview data={month12Data} />}
+        {overviewData && <MonthOverview data={overviewData} isHideRemainder={false} />}
       </View>
     </TouchableOpacity>
 
     {/* Các ví */}
     <TouchableOpacity style={styles.componentContainer} onPress={() => navigation.navigate("Wallets")}>
-      <Text style={styles.title}>Các tài khoản</Text>
+      <Text style={styles.title}>Ví của tôi</Text>
       <View>
          <FlatList
           data={wallets}
@@ -95,44 +137,84 @@ const HomeScreen = ({navigation}) => {
     </TouchableOpacity>
     
     {/* Các giao dịch */}
-    <TouchableOpacity style={styles.componentContainer} onPress={() => navigation.navigate("Transaction")}>
-      <Text style={styles.title}>Các giao dịch</Text>
-      <View>
-        <FlatList
-        data={sortedTransactions}
-        keyExtractor={(item) => item.id}
-        renderItem={({ item }) => (
-          <View
-            style={[
-              styles.transaction,
-              { borderRightColor: item.amount < 0 ? "red" : "green" },
-            ]}
-          >
-            <FontAwesome name={item.icon} size={22} style={styles.icon}/>
-            <View style={styles.details}>
-              <Text style={styles.category}>{item.category}</Text>
-              <Text style={styles.wallet}>{item.wallet}</Text>
-            </View>
-            <View style={styles.rightSection}>
-              <Text
-                style={[
-                  styles.amount,
-                  { color: item.amount < 0 ? "red" : "green" },
-                ]}
-              >
-                {item.amount.toLocaleString("vi-VN")} đ
-              </Text>
-              <Text style={styles.date}>{item.date}</Text>
-            </View>
-          </View>
-        )}
-      />
+    <View style={styles.componentContainer} >
+      <Text style={styles.title} onPress={() => navigation.navigate("Transaction")}>Các giao dịch</Text>
+
+      {/* Tab */} 
+      <View style={styles.tabContainer}>
+        <TouchableOpacity
+          style={[
+            styles.tabButton,
+            filter === "all" && styles.activeTabButton,
+          ]}
+          onPress={() => setFilter("all")}
+        >
+          <Text style={[styles.tabText, filter === "all" && styles.activeTabText]}>
+            Tất cả
+          </Text>
+        </TouchableOpacity>
+
+        <TouchableOpacity
+          style={[
+            styles.tabButton,
+            filter === "income" && styles.activeTabButton,
+          ]}
+          onPress={() => setFilter("income")}
+        >
+          <Text style={[styles.tabText, filter === "income" && styles.activeTabText]}>
+            Thu
+          </Text>
+        </TouchableOpacity>
+
+        <TouchableOpacity
+          style={[
+            styles.tabButton,
+            filter === "expense" && styles.activeTabButton,
+          ]}
+          onPress={() => setFilter("expense")}
+        >
+          <Text style={[styles.tabText, filter === "expense" && styles.activeTabText]}>
+            Chi
+          </Text>
+        </TouchableOpacity>
       </View>
-    </TouchableOpacity>
+
+      <FlatList
+      data={filteredTransactions.slice(0, 10)}
+      keyExtractor={(item) => item.id}
+      style={styles.transactionsList}
+      renderItem={({ item }) => (
       
-    
+        <TouchableOpacity onPress={() => navigation.navigate("Transaction")}
+          style={[
+            styles.transaction,
+            { borderRightColor: item.amount < 0 ? "red" : "green" },
+          ]}
+        >
+          <FontAwesome name={item.icon} size={22} style={styles.icon}/>
+          <View style={styles.details}>
+            <Text style={styles.category}>{item.category}</Text>
+            <Text style={styles.wallet}>{item.wallet}</Text>
+          </View>
+          <View style={styles.rightSection}>
+            <Text
+              style={[
+                styles.amount,
+                { color: item.amount < 0 ? "red" : "green" },
+              ]}
+            >
+              {item.amount.toLocaleString("vi-VN")} đ
+            </Text>
+            <Text style={styles.date}>{item.date}</Text>
+          </View>
+        </TouchableOpacity>
+      )}
+    />
+    </View>
+      
+ 
    
-    </ScrollView>
+    </View>
     <View style={{justifyContent: 'flex-end'}}>
       <View style={styles.optionsContainer}>
         {open &&
@@ -155,7 +237,7 @@ const HomeScreen = ({navigation}) => {
           }
           )}
       </View>
-
+      
       {/* Floating Action Button */}
       <View style={{flex: 1 }}>
         <TouchableOpacity style={styles.fab} onPress={toggleMenu}>
@@ -176,12 +258,12 @@ const styles = StyleSheet.create({
     backgroundColor: "#f5f5f5",
   },
   componentContainer: {
-    marginBottom: 20,
+    marginBottom: 8,
   },
   title: {
     fontWeight: "bold",
     fontSize: 20,
-    marginBottom: 2,
+    marginBottom: 5,
     textAlign: "center",
   },
 
@@ -210,10 +292,40 @@ const styles = StyleSheet.create({
     borderRightWidth: 3,
     borderRadius: 8,
     marginBottom: 5,
-    padding: 5,
-    paddingLeft: 10,
-    paddingRight: 10,
+    padding: 2,
+    paddingHorizontal: 10,
     elevation: 1,
+  },
+  transactionsList:{
+    height: 160,
+  },
+  tabContainer: {
+    flexDirection: "row",
+    justifyContent: "space-around",
+    marginBottom: 16,
+  },
+  tabButton: {
+    paddingVertical: 3,
+    borderWidth: 1,
+    height: 35,
+    width: 100,
+    alignItems: "center",
+    paddingHorizontal: 10,
+    borderColor: "#3498db",
+    borderRadius: 8,
+    backgroundColor: "white",
+  },
+  activeTabButton: {
+    backgroundColor: "#3498db",
+  },
+  tabText: {
+    fontSize: 16,
+    textAlign: "center",
+    color: "#3498db",
+  },
+  activeTabText: {
+    color: "#fff",
+    fontWeight: "bold",
   },
   icon: {
     width: 40,
@@ -284,4 +396,5 @@ const styles = StyleSheet.create({
     borderRadius: 5,
     padding: 5,
   },
+
 })

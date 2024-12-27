@@ -7,7 +7,7 @@ const OverviewScreen = () => {
   return (
     <FlatList
       data={monthlyData}
-      renderItem={({ item }) => <MonthOverview data={item} />}
+      renderItem={({ item }) => <MonthOverview data={item} isHideRemainder={true} />}
       keyExtractor={(item, index) => index.toString()}
       contentContainerStyle={styles.container}
     />
