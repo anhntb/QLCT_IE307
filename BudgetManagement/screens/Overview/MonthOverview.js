@@ -5,7 +5,7 @@ import { Dimensions } from 'react-native';
 
 const screenWidth = Dimensions.get('window').width;
 
-const MonthOverview = ({ data }) => {
+const MonthOverview = ({ data, isHideRemainder }) => {
   const total = data.income + data.expense;
 
   const chartData = data.income === 0 && data.expense === 0
@@ -71,9 +71,13 @@ const MonthOverview = ({ data }) => {
           }}
         />
         <View style={styles.infoContainer}>
-          <Text style={styles.incomeText}>Thu nhập: {formatCurrency(data.income)}</Text>
-          <Text style={styles.expenseText}>Chi phí: {formatCurrency(data.expense)}</Text>
-          <Text style={styles.totalText}>Tổng cộng: {formatCurrency(total)}</Text>
+          <Text style={styles.incomeText}>Thu: {formatCurrency(data.income)}</Text>
+          <Text style={styles.expenseText}>Chi: {formatCurrency(data.expense)}</Text>
+          {!isHideRemainder ? (
+          <Text style={styles.totalText}>Số dư ví: {formatCurrency(data.total)}</Text>
+          ) : (
+          <Text style={styles.totalText}>Tổng thu: {formatCurrency(total)}</Text>
+          )}
         </View>
       </View>
     </View>
@@ -100,7 +104,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   infoContainer: {
-    marginLeft: 20,
     flex: 1,
   },
   incomeText: {

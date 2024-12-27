@@ -6,7 +6,7 @@ export const AuthProvider = ({ children }) => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
 
   const login = (username, password) => {
-    if (username === "1111" && password === "1111") {
+    if (username === "" && password === "") {
       setIsAuthenticated(true);
     } else {
       alert("Incorrect email or password.");

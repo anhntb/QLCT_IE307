@@ -36,6 +36,8 @@ const MainDrawer = () => {
           drawerIcon: ({ color, size }) => (
             <FontAwesome name="home" size={size} color={color} />
           ),
+          drawerLabel: "Trang chủ",
+          headerTitle: "Trang chủ",
           drawerLabelStyle: {
             fontSize: 20, // Tăng cỡ chữ
             fontWeight: "bold", // Đậm chữ
@@ -56,8 +58,8 @@ const MainDrawer = () => {
           drawerIcon: ({ color, size }) => (
             <FontAwesome name="money" size={size} color={color} />
           ),
-          drawerItemStyle: {
-          },
+          drawerLabel: "Ví của tôi",
+          headerTitle: "Ví của tôi",
         }}
       />
       <Drawer.Screen
@@ -72,6 +74,8 @@ const MainDrawer = () => {
             fontWeight: "500", // Trọng lượng chữ trung bình
             marginLeft: 8, // Điều chỉnh để label thẳng hàng với icon
           },
+          drawerLabel: "Các giao dịch",
+          headerTitle: "Các giao dịch",
         }}
       />
       <Drawer.Screen
@@ -81,6 +85,8 @@ const MainDrawer = () => {
           drawerIcon: ({ color, size }) => (
             <FontAwesome name="bar-chart" size={size} color={color} />
           ),
+          drawerLabel: "Sơ lược",
+          headerTitle: "Sơ lược",
         }}
       />
       <Drawer.Screen
@@ -95,6 +101,8 @@ const MainDrawer = () => {
             fontWeight: "500", // Trọng lượng chữ trung bình
             marginLeft: 12, // Điều chỉnh để label thẳng hàng với icon
           },
+          drawerLabel: "Trang cá nhân",
+          headerTitle: "Trang cá nhân",
         }}
       />
       <Drawer.Screen
@@ -102,6 +110,8 @@ const MainDrawer = () => {
         component={AddExpenseScreen}
         options={{
           drawerItemStyle: { display: "none" },
+          drawerLabel: "Thêm chi tiêu",
+          headerTitle: "Thêm chi tiêu",
         }}
       />
       <Drawer.Screen
@@ -109,6 +119,9 @@ const MainDrawer = () => {
         component={AddIncomeScreen}
         options={{
           drawerItemStyle: { display: "none" },
+          drawerLabel: "Thêm thu nhập",
+          headerTitle: "Thêm thu nhập",
+
         }}
       />
     </Drawer.Navigator>

@@ -23,6 +23,7 @@ export const initializeDatabase = async () => {
         amount REAL NOT NULL,
         note TEXT
       );
+      
     `);
     await db.execAsync(`
       CREATE TABLE IF NOT EXISTS transactions (
