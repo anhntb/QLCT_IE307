@@ -15,9 +15,9 @@ const FilterTransactionsScreen = () => {
   const [filterWallet, setFilterWallet] = useState(""); // Ví
   const [minValue, setMinValue] = useState(""); // Giá trị từ
   const [maxValue, setMaxValue] = useState(""); // Giá trị đến
-  const [filteredTransactions, setFilteredTransactions] = useState(transactions); // Kết quả lọc
-
   const [transactions, setTransactions] = useState([]);
+  const [filteredTransactions, setFilteredTransactions] = useState(transactions); // Kết quả lọc
+  
   // Danh sách các giá trị có sẵn
   const expenseCategories = [
     "Đồ ăn/Đồ uống",
@@ -25,6 +25,8 @@ const FilterTransactionsScreen = () => {
     "Chi phí xăng",
     "Tiền nhà",
     "Giải trí",
+    "Du lịch",
+    "Sửa chữa",
     "Sức khỏe",
     "Khác",
   ];
@@ -100,10 +102,10 @@ const FilterTransactionsScreen = () => {
       results = results.filter((t) => t.walletId === filterWallet);
     }
     if (minValue) {
-      results = results.filter((t) => Math.abs(t.amount) > Number(minValue));
+      results = results.filter((t) => Math.abs(t.amount) >= Number(minValue));
     }
     if (maxValue) {
-      results = results.filter((t) => Math.abs(t.amount) < Number(maxValue));
+      results = results.filter((t) => Math.abs(t.amount) <= Number(maxValue));
     }
 
     setFilteredTransactions(results); // Cập nhật kết quả
@@ -119,10 +121,10 @@ const FilterTransactionsScreen = () => {
           <Picker.Item label="Chi tiêu" value="chi" />
         </Picker>
       </View>
-      {/* Bộ lọc Phân loại */}
+      {/* Bộ lọc Danh mục */}
       <View  style={styles.pickerStyle}>
       <Picker selectedValue={filterCategory} onValueChange={(itemValue) => setFilterCategory(itemValue)} style={styles.picker}>
-        <Picker.Item label="Chọn phân loại" value="" />
+        <Picker.Item label="Chọn danh mục" value="" />
         {filterType === "thu" &&
           incomeCategories.map((category) => (
             <Picker.Item key={category} label={category} value={category} />
@@ -188,6 +190,11 @@ const FilterTransactionsScreen = () => {
       <Button title="Lọc giao dịch" onPress={filterTransactions} color="#26A071"/>
 
       {/* Hiển thị kết quả */}
+    {filteredTransactions.length === 0 ? (
+      <View style={styles.noTransactionsContainer}>
+        <Text style={styles.noTransactionsText}>Không tìm thấy giao dịch</Text>
+      </View>
+    ) : (  
       <FlatList
       data={filteredTransactions}
       keyExtractor={(item) => item.id}
@@ -218,6 +225,7 @@ const FilterTransactionsScreen = () => {
         </View>
       )}
       />
+    )}
     </View>
   );
 };
@@ -280,8 +288,20 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
     paddingHorizontal: 17,
   },
-
-
+  noTransactionsContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  noTransactionsText: {
+    fontSize: 18,
+    color: '#888',
+  },
+  transactionItem: {
+    padding: 16,
+    borderBottomWidth: 1,
+    borderBottomColor: '#ccc',
+  },
 });
 
 export default FilterTransactionsScreen;
