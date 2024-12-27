@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import {
 SafeAreaView,
   View,
@@ -44,6 +44,27 @@ const AddIncomeScreen = ({navigation}) => {
         console.error('Error fetching wallets:', error);
       }
     };
+
+    useFocusEffect(
+      useCallback(() => {
+        // Reset state to default values
+        setChecked(false);
+        setDate(new Date());
+        setNote('');
+        setAmount('');
+        setShowDatePicker(false);
+        setCategoryModalVisible(false);
+        setSelectedCategoryName("Thu nhập từ tài chính");
+        setSelectedCategoryIcon("credit-card");
+        setSelectedWalletId(false);
+        setSelectedWalletName("Ví");
+        setWallets([]);
+        setModalVisible(false);
+
+        // Load wallets
+        loadWallets();
+      }, [])
+    );
 
   const handleWalletPress = () => {
     setModalVisible(true);
@@ -173,11 +194,9 @@ const AddIncomeScreen = ({navigation}) => {
           </View>
         </Modal>
 
-      <View style={styles.fieldContainer}>
-              <FontAwesome name="university" size={24} color="#000" />
-              <TouchableOpacity onPress={handleWalletPress}>
-              <Text style={styles.fieldText}>{selectedWalletName}</Text>
-              </TouchableOpacity>
+        <TouchableOpacity onPress={handleWalletPress} style={styles.fieldContainer}>
+            <FontAwesome name="university" size={24} color="#000" /> 
+            <Text style={styles.fieldText}>{selectedWalletName}</Text>             
       
             {/* Wallet Modal */}
             <Modal
@@ -207,14 +226,12 @@ const AddIncomeScreen = ({navigation}) => {
                 </View>
               </View>
             </Modal>
-          </View>
-
-        <View style={styles.fieldContainer}>
-          <FontAwesome name="calendar" size={24} color="#000" />
-          <TouchableOpacity onPress={() => setShowDatePicker(true)}>
-            <Text style={styles.fieldText}>{formattedDate}</Text>
           </TouchableOpacity>
-        </View>
+
+        <TouchableOpacity onPress={() => setShowDatePicker(true)} style={styles.fieldContainer}>
+          <FontAwesome name="calendar" size={24} />
+          <Text style={styles.fieldText}>{formattedDate}</Text>
+        </TouchableOpacity>
 
         {showDatePicker && (
           <DateTimePicker
