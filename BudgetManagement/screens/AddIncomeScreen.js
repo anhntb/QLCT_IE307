@@ -10,6 +10,7 @@ SafeAreaView,
   Modal,
   FlatList,
   ScrollView,
+  Alert,
 } from 'react-native';
 import { FontAwesome } from '@expo/vector-icons';
 import DateTimePicker from '@react-native-community/datetimepicker';
@@ -24,7 +25,8 @@ const AddIncomeScreen = ({navigation}) => {
   const [amount, setAmount] = useState('');
   const [showDatePicker, setShowDatePicker] = useState(false);
   const [categoryModalVisible, setCategoryModalVisible] = useState(false);
-  const [selectedCategory, setSelectedCategory] = useState("Thu nhập từ tài chính");
+  const [selectedCategoryName, setSelectedCategoryName] = useState("Thu nhập từ tài chính");
+  const [selectedCategoryIcon, setSelectedCategoryIcon] = useState("credit-card");
   const [selectedWalletId, setSelectedWalletId] = useState(false);
   const [selectedWalletName, setSelectedWalletName] = useState("Ví");
   const [wallets, setWallets] = useState([]);
@@ -54,22 +56,22 @@ const AddIncomeScreen = ({navigation}) => {
   };
 
   const categories = [
-    "Thu nhập từ tài chính",
-    "Lương",
-    "Tiền trợ cấp",
-    "Tiền từ các việc vặt",
-    "Tiết kiệm cá nhân",
-    "Khác",
+    { name: "Thu nhập từ tài chính", icon: "credit-card"},
+    { name: "Lương", icon: "money"},
+    { name: "Tiền trợ cấp", icon: "gift"},
+    { name: "Tiền từ các việc vặt", icon: "file-text"},
+    { name: "Tiết kiệm cá nhân", icon: "usd" },
+    { name: "Khác", icon: "ellipsis-h" },
   ];
 
   // Thêm hàm để xử lý lưu thu nhập
   const handleSaveIncome = async () => {
     try {
-      if (!amount || !selectedCategory || !date || !selectedWalletId) {
+      if (!amount || !selectedCategoryName || !date || !selectedWalletId) {
         Alert.alert('Error', 'Vui lòng điền đủ thông tin!');
         return;
       }
-      await insertTran(amount, selectedCategory, date.toISOString().split('T')[0], selectedWalletId, note);
+      await insertTran(amount, selectedCategoryName, date.toISOString().split('T')[0], selectedWalletId, note, selectedCategoryIcon);
       await loadWallets(); // Reload dữ liệu ví sau khi lưu thu nhập
       navigation.navigate('Home'); // Điều hướng trở lại màn hình Home
     } catch (error) {
@@ -78,7 +80,8 @@ const AddIncomeScreen = ({navigation}) => {
   };
 
   const handleCategorySelect = (category) => {
-    setSelectedCategory(category);
+    setSelectedCategoryName(category.name);
+    setSelectedCategoryIcon(category.icon);
     setCategoryModalVisible(false);
   };
 
@@ -127,8 +130,8 @@ const AddIncomeScreen = ({navigation}) => {
 
         {/* Category Section */}
         <View style={styles.categoryContainer}>
-          <FontAwesome name="money" size={24} color="#007aff" />
-          <Text style={styles.categoryText}>{selectedCategory}</Text>
+          <FontAwesome name={selectedCategoryIcon} size={24} />
+          <Text style={styles.categoryText}>{selectedCategoryName}</Text>
           <TouchableOpacity
             style={styles.addButton}
             onPress={() => setCategoryModalVisible(true)}
@@ -149,13 +152,14 @@ const AddIncomeScreen = ({navigation}) => {
               <Text style={styles.modalTitle}>Chọn danh mục</Text>
               <FlatList
                 data={categories}
-                keyExtractor={(item) => item}
+                keyExtractor={(item) => item.name}
                 renderItem={({ item }) => (
                   <TouchableOpacity
                     style={styles.modalItem}
                     onPress={() => handleCategorySelect(item)}
                   >
-                    <Text style={styles.modalItemText}>{item}</Text>
+                    <FontAwesome name={item.icon} size={24} />
+                    <Text style={styles.modalItemText}>{item.name}</Text>
                   </TouchableOpacity>
                 )}
               />
@@ -189,7 +193,7 @@ const AddIncomeScreen = ({navigation}) => {
                     data={wallets}
                     keyExtractor={(item) => item.id.toString()}
                     renderItem={({ item }) => (
-                      <TouchableOpacity onPress={() => handleWalletSelect(item)}>
+                      <TouchableOpacity onPress={() => handleWalletSelect(item)} style={styles.modalItem}>
                         <Text style={styles.walletItem}>{item.name}</Text>
                       </TouchableOpacity>
                     )}
@@ -319,12 +323,15 @@ const styles = StyleSheet.create({
     textAlign: 'center',
   },
   modalItem: {
+    flexDirection: 'row',
+    alignItems: 'center',
     padding: 12,
     borderBottomWidth: 1,
     borderBottomColor: '#e8e8e8',
   },
   modalItemText: {
     fontSize: 16,
+    marginLeft: 15,
   },
   modalCloseButton: {
     backgroundColor: '#38ad05',
