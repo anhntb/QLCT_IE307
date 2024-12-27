@@ -1,4 +1,5 @@
 import * as SQLite from 'expo-sqlite';
+import transactions from '../data/transactions';
 
 let db;
 
@@ -24,7 +25,7 @@ export const initializeDatabase = async () => {
       );
     `);
     await db.execAsync(`
-      CREATE TABLE IF NOT EXISTS expenses (
+      CREATE TABLE IF NOT EXISTS transactions (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         amount REAL NOT NULL,
         category TEXT NOT NULL,
@@ -34,18 +35,7 @@ export const initializeDatabase = async () => {
         FOREIGN KEY (walletId) REFERENCES wallets(id)
       );
     `);
-    await db.execAsync(`
-      CREATE TABLE IF NOT EXISTS incomes (
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
-        amount REAL NOT NULL,
-        category TEXT NOT NULL,
-        date TEXT NOT NULL,
-        walletId INTEGER NOT NULL,
-        note TEXT,
-        FOREIGN KEY (walletId) REFERENCES wallets(id)
-      );
-    `);
-    console.log('Database initialized: wallets table created');
+    console.log('Database initialized: Tables created');
   } catch (error) {
     console.error('Database initialization error:', error);
     throw error;
@@ -157,17 +147,30 @@ export const fetchWalletById = async (id) => {
   }
 };
 
-// Thêm chi tiêu
-export const insertExpense = async (amount, category, date, walletId, note = '') => {
+// Lấy tất cả giao dịch
+export const fetchAllTransactions = async () => {
+  const db = await openDatabase();
+  try {
+    const transactions = await db.getAllAsync('SELECT * FROM transactions;');
+    console.log('All wallets fetched:', transactions);
+    return transactions;
+  } catch (error) {
+    console.error('Error fetching transactions:', error);
+    throw error;
+  }
+};
+
+// Thêm thu chi
+export const insertTran = async (amount, category, date, walletId, note = '') => {
   const db = await openDatabase();
   try {
     const result = await db.runAsync(
-      'INSERT INTO expenses (amount, category, date, walletId, note) VALUES (?, ?, ?, ?, ?);',
+      'INSERT INTO transactions (amount, category, date, walletId, note) VALUES (?, ?, ?, ?, ?);',
       amount, category, date, walletId, note
     );
-    await updateWalletAmount(walletId, -amount); // Trừ tiền trong ví
+    await updateWalletAmount(walletId, amount); // Cập nhật tiền trong ví
     
-    console.log('Expense inserted with ID:', result.lastInsertRowId);
+    console.log('Transaction inserted with ID:', result.lastInsertRowId);
     return result.lastInsertRowId;
   } catch (error) {
     console.error('Insert expense error:', error);
@@ -175,17 +178,17 @@ export const insertExpense = async (amount, category, date, walletId, note = '')
   }
 };
 
-// Xóa chi tiêu
-export const deleteExpense = async (id) => {
+// Xóa thu chi
+export const deleteTran = async (id) => {
   const db = await openDatabase();
   try {
-    const expense = await db.getFirstAsync('SELECT * FROM expenses WHERE id = ?;', id);
+    const transaction = await db.getFirstAsync('SELECT * FROM transactions WHERE id = ?;', id);
     const result = await db.runAsync(
-      'DELETE FROM expenses WHERE id = ?;',
+      'DELETE FROM transactions WHERE id = ?;',
       id
     );
-    await updateWalletAmount(expense.walletId, expense.amount); // Cộng lại tiền vào ví
-    console.log('Expense deleted with ID:', id);
+    await updateWalletAmount(transaction.walletId, -transaction.amount); // Cập nhật tiền vào ví
+    console.log('Transaction deleted with ID:', id);
     return result.changes;
   } catch (error) {
     console.error('Delete expense error:', error);
@@ -193,73 +196,23 @@ export const deleteExpense = async (id) => {
   }
 };
 
-// Sửa chi tiêu
-export const updateExpense = async (id, amount, category, date, walletId, note = '') => {
-  const db = await openDatabase();
-  try {
-    const oldExpense = await db.getFirstAsync('SELECT * FROM expenses WHERE id = ?;', id);
-    const result = await db.runAsync(
-      'UPDATE expenses SET amount = ?, category = ?, date = ?, walletId = ?, note = ? WHERE id = ?;',
-      amount, category, date, walletId, note, id
-    );
-    await updateWalletAmount(oldExpense.walletId, oldExpense.amount); // Cộng lại tiền vào ví cũ
-    await updateWalletAmount(walletId, -amount); // Trừ tiền trong ví mới
-    console.log('Expense updated with ID:', id);
-    return result.changes;
-  } catch (error) {
-    console.error('Update expense error:', error);
-    throw error;
-  }
-};
+// // Sửa thu chi
+// export const updateTran = async (id, amount, category, date, walletId, note = '') => {
+//   const db = await openDatabase();
+//   try {
+//     const oldTran = await db.getFirstAsync('SELECT * FROM transactions WHERE id = ?;', id);
+//     const result = await db.runAsync(
+//       'UPDATE transactions SET amount = ?, category = ?, date = ?, walletId = ?, note = ? WHERE id = ?;',
+//       amount, category, date, walletId, note, id
+//     );
+//     // cần sửa
+//     await updateWalletAmount(oldTran.walletId, oldTran.amount); // Cộng lại tiền vào ví cũ
+//     await updateWalletAmount(walletId, -amount); // Trừ tiền trong ví mới
+//     console.log('Transactions updated with ID:', id);
+//     return result.changes;
+//   } catch (error) {
+//     console.error('Update expense error:', error);
+//     throw error;
+//   }
+// };
 
-// Tương tự cho thu nhập
-export const insertIncome = async (amount, category, date, walletId, note = '') => {
-  const db = await openDatabase();
-  try {
-    const result = await db.runAsync(
-      'INSERT INTO incomes (amount, category, date, walletId, note) VALUES (?, ?, ?, ?, ?);',
-      amount, category, date, walletId, note
-    );
-    await updateWalletAmount(walletId, amount); // Cộng tiền vào ví
-    console.log('Income inserted with ID:', result.lastInsertRowId);
-    return result.lastInsertRowId;
-  } catch (error) {
-    console.error('Insert income error:', error);
-    throw error;
-  }
-};
-
-export const deleteIncome = async (id) => {
-  const db = await openDatabase();
-  try {
-    const income = await db.getFirstAsync('SELECT * FROM incomes WHERE id = ?;', id);
-    const result = await db.runAsync(
-      'DELETE FROM incomes WHERE id = ?;',
-      id
-    );
-    await updateWalletAmount(income.walletId, -income.amount); // Trừ tiền trong ví
-    console.log('Income deleted with ID:', id);
-    return result.changes;
-  } catch (error) {
-    console.error('Delete income error:', error);
-    throw error;
-  }
-};
-
-export const updateIncome = async (id, amount, category, date, walletId, note = '') => {
-  const db = await openDatabase();
-  try {
-    const oldIncome = await db.getFirstAsync('SELECT * FROM incomes WHERE id = ?;', id);
-    const result = await db.runAsync(
-      'UPDATE incomes SET amount = ?, category = ?, date = ?, walletId = ?, note = ? WHERE id = ?;',
-      amount, category, date, walletId, note, id
-    );
-    await updateWalletAmount(oldIncome.walletId, -oldIncome.amount); // Trừ tiền trong ví cũ
-    await updateWalletAmount(walletId, amount); // Cộng tiền vào ví mới
-    console.log('Income updated with ID:', id);
-    return result.changes;
-  } catch (error) {
-    console.error('Update income error:', error);
-    throw error;
-  }
-};

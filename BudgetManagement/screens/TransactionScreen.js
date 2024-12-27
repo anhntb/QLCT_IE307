@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import {
   View,
   Text,
@@ -6,19 +6,84 @@ import {
   StyleSheet,
   TouchableOpacity,
   Image,
+  Alert,
 } from 'react-native';
-import transactions from '../data/transactions';
+//import transactions from '../data/transactions';
 import { FontAwesome } from "@expo/vector-icons";
+import { fetchAllTransactions, fetchAllWallets, deleteTran } from '../db/db';
+import { useFocusEffect } from '@react-navigation/native';
+
 
 const parseDate = (dateString) => {
-  const [day, month, year] = dateString.split('/').map(Number);
+  const [year, month, day] = dateString.split('-').map(Number);
   return new Date(year, month - 1, day); // Month is 0-based
 };
 
 const TransactionScreen = () => {
-
-
+  const [wallets, setWallets] = useState([]);
+  const [transactions, setTransactions] = useState([]);
   const [currentYear, setCurrentYear] = useState(2024); // Năm hiện tại
+  
+  useFocusEffect(
+    useCallback(() => {
+      loadTransactions();
+      loadWallets();
+    }, [])
+  );
+
+  useEffect(() => {
+    loadTransactions();
+  }, []);
+  
+  const loadTransactions = async () => {
+    try {
+      const result = await fetchAllTransactions();
+      setTransactions(result);
+    } catch (error) {
+      console.error('Error fetching transactions:', error);
+    }
+  };
+
+  const loadWallets = async () => {
+    try {
+      const result = await fetchAllWallets();
+      setWallets(result);
+    } catch (error) {
+      console.error('Error fetching wallets:', error);
+    }
+  };
+
+  // Lấy tên ví theo id
+  const getWalletName = (walletId) => {
+    const wallet = wallets.find(w => w.id === walletId);
+    return wallet ? wallet.name : 'Ví đã bị xóa';
+  };
+
+  // Xóa giao dịch
+  const handleDeleteTransaction = (transactionId) => {
+    Alert.alert(
+      'Xác nhận',
+      'Bạn có chắc chắn muốn xóa giao dịch này không?',
+      [
+        {
+          text: 'Hủy',
+          style: 'cancel',
+        },
+        {
+          text: 'OK',
+          onPress: async () => {
+            try {
+              await deleteTran(transactionId);
+              loadTransactions(); // Reload transactions after deletion
+            } catch (error) {
+              console.error('Error deleting transaction:', error);
+            }
+          },
+        },
+      ],
+      { cancelable: false }
+    );
+  };
 
   // Lọc giao dịch theo năm
   const filterByYear = (year) => {
@@ -92,7 +157,7 @@ const TransactionScreen = () => {
                 <FontAwesome name={transaction.icon} size={24} style={styles.icon}/>
                 <View style={styles.details}>
                   <Text style={styles.category}>{transaction.category}</Text>
-                  <Text style={styles.wallet}>{transaction.wallet}</Text>
+                  <Text style={styles.wallet}>{getWalletName(transaction.walletId)}</Text>
                 </View>
                 <View style={styles.rightSection}>
                   <Text
@@ -105,6 +170,9 @@ const TransactionScreen = () => {
                   </Text>
                   <Text style={styles.date}>{transaction.date}</Text>
                 </View>
+                <TouchableOpacity style={styles.delIcon} onPress={() => handleDeleteTransaction(transaction.id)}>
+                    <FontAwesome name="trash" size={24} color="gray" />
+                </TouchableOpacity>
               </View>
               ))}
             </View>
@@ -204,6 +272,9 @@ const styles = StyleSheet.create({
   amount: {
     fontSize: 16,
     fontWeight: 'bold',
+  },
+  delIcon: {
+    paddingLeft: 15,
   },
 });
 

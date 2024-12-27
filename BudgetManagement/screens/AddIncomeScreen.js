@@ -13,7 +13,7 @@ SafeAreaView,
 } from 'react-native';
 import { FontAwesome } from '@expo/vector-icons';
 import DateTimePicker from '@react-native-community/datetimepicker';
-import { insertIncome, fetchAllWallets, initializeDatabase } from '../db/db';
+import { insertTran, fetchAllWallets, initializeDatabase } from '../db/db';
 import { useFocusEffect } from '@react-navigation/native';
 
 
@@ -25,7 +25,8 @@ const AddIncomeScreen = ({navigation}) => {
   const [showDatePicker, setShowDatePicker] = useState(false);
   const [categoryModalVisible, setCategoryModalVisible] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState("Thu nhập từ tài chính");
-  const [selectedWalletId, setSelectedWalletId] = useState("Ví");
+  const [selectedWalletId, setSelectedWalletId] = useState(false);
+  const [selectedWalletName, setSelectedWalletName] = useState("Ví");
   const [wallets, setWallets] = useState([]);
   const [modalVisible, setModalVisible] = useState(false);
   
@@ -48,6 +49,7 @@ const AddIncomeScreen = ({navigation}) => {
   
   const handleWalletSelect = (wallet) => {
     setSelectedWalletId(wallet.id);
+    setSelectedWalletName(wallet.name);
     setModalVisible(false);
   };
 
@@ -64,10 +66,10 @@ const AddIncomeScreen = ({navigation}) => {
   const handleSaveIncome = async () => {
     try {
       if (!amount || !selectedCategory || !date || !selectedWalletId) {
-        console.error('Please fill in all fields');
+        Alert.alert('Error', 'Vui lòng điền đủ thông tin!');
         return;
       }
-      await insertIncome(amount, selectedCategory, date, selectedWalletId, note);
+      await insertTran(amount, selectedCategory, date.toISOString().split('T')[0], selectedWalletId, note);
       await loadWallets(); // Reload dữ liệu ví sau khi lưu thu nhập
       navigation.navigate('Home'); // Điều hướng trở lại màn hình Home
     } catch (error) {
@@ -170,7 +172,7 @@ const AddIncomeScreen = ({navigation}) => {
       <View style={styles.fieldContainer}>
               <FontAwesome name="university" size={24} color="#000" />
               <TouchableOpacity onPress={handleWalletPress}>
-              <Text style={styles.fieldText}>{selectedWalletId}</Text>
+              <Text style={styles.fieldText}>{selectedWalletName}</Text>
               </TouchableOpacity>
       
             {/* Wallet Modal */}
@@ -350,6 +352,10 @@ const styles = StyleSheet.create({
     marginLeft: 8,
     borderBottomWidth: 1,
     borderBottomColor: '#e8e8e8',
+  },
+  walletItem: {
+    padding: 10,
+    fontSize: 18,
   },
   switchContainer: {
     flexDirection: 'row',
