@@ -80,12 +80,12 @@ export default function WalletsScreen() {
 
   const handleDeleteWallet = (id) => {
     Alert.alert(
-        'Confirm Delete',
-        'Are you sure you want to delete this wallet?',
+        'Xác nhận xóa',
+        'Bạn có chắc muốn xóa ví tiền này không??',
         [
-            { text: 'Cancel', style: 'cancel' },
+            { text: 'Hủy', style: 'cancel' },
             { 
-                text: 'Delete', 
+                text: 'Xóa', 
                 onPress: async () => {
                     await deleteWallet(id);
                     loadWallets();
@@ -144,29 +144,36 @@ const totalAmount = wallets.reduce((sum, wallet) => sum + wallet.amount, 0);
               value={transferData.amount}
               onChangeText={(text) => setTransferData({ ...transferData, amount: text })}
             />
-            <Text style={styles.label}>Từ</Text>
-            <Picker
-              selectedValue={transferData.fromWallet}
-              onValueChange={(value) => setTransferData({ ...transferData, fromWallet: value })}
-            >
-              {wallets
-                .filter(wallet => wallet.id === transferData.fromWallet)
-                .map(wallet => (
-                  <Picker.Item key={wallet.id} label={wallet.name} value={wallet.id} />
-                ))}
-            </Picker>
-
-            <Text style={styles.label}>Đến</Text>
-            <Picker
-              selectedValue={transferData.toWallet}
-              onValueChange={(value) => setTransferData({ ...transferData, toWallet: value })}
-            >
-              {wallets
-                .filter(wallet => wallet.id !== transferData.fromWallet)
-                .map(wallet => (
-                  <Picker.Item key={wallet.id} label={wallet.name} value={wallet.id} />
-                ))}
-            </Picker>
+            
+              <Text style={styles.label}>Từ:</Text>
+            <View style={styles.pickerContainer}>
+              <Picker
+                selectedValue={transferData.fromWallet}
+                style={{color: "white"}}
+                onValueChange={(value) => setTransferData({ ...transferData, fromWallet: value })}
+              >
+                {wallets
+                  .filter(wallet => wallet.id === transferData.fromWallet)
+                  .map(wallet => (
+                    <Picker.Item key={wallet.id} label={wallet.name} value={wallet.id} />
+                  ))}
+              </Picker>
+            </View>
+            
+            <Text style={styles.label}>Đến:</Text>
+            <View style={styles.pickerContainer}>
+              <Picker
+                selectedValue={transferData.toWallet}
+                style={{color: "white"}}
+                onValueChange={(value) => setTransferData({ ...transferData, toWallet: value })}
+              >
+                {wallets
+                  .filter(wallet => wallet.id !== transferData.fromWallet)
+                  .map(wallet => (
+                    <Picker.Item key={wallet.id} label={wallet.name} value={wallet.id} />
+                  ))}
+              </Picker>
+            </View>
             <TextInput
               style={styles.input}
               placeholder="Ghi chú"
@@ -174,8 +181,8 @@ const totalAmount = wallets.reduce((sum, wallet) => sum + wallet.amount, 0);
               onChangeText={(text) => setTransferData({ ...transferData, note: text })}
             />
             <View style={styles.modalButtons}>
-              <Button title="Hủy" onPress={toggleTransferModal} color="red" />
-              <Button title="Lưu" onPress={handleTransfer} />
+              <Button title="Hủy" onPress={toggleTransferModal} color="#F7637D" />
+              <Button title="Lưu" onPress={handleTransfer} color="#26A071"/>
             </View>
           </View>
         </View>
@@ -205,8 +212,8 @@ const totalAmount = wallets.reduce((sum, wallet) => sum + wallet.amount, 0);
               onChangeText={(text) => setNewWallet({ ...newWallet, note: text })}
             />
             <View style={styles.modalButtons}>
-              <Button title="Hủy" onPress={toggleModal} color="red" />
-              <Button title="Lưu lại" onPress={handleAddWallet} />
+              <Button title="Hủy" onPress={toggleModal} color="#F7637D" />
+              <Button title="Lưu lại" onPress={handleAddWallet}  color="#26A071"/>
             </View>
           </View>
         </View>
@@ -222,10 +229,15 @@ const styles = StyleSheet.create({
     backgroundColor: "#f5f5f5",
     padding: 20,
   },
+  pickerContainer:{
+    backgroundColor: "#4BBF87",
+    borderRadius: 10,
+    marginVertical: 5,
+  },
   totalContainer: {
     marginBottom: 20,
     padding: 15,
-    backgroundColor: "#007BFF",
+    backgroundColor: "#065A4A",
     borderRadius: 10,
     elevation: 2,
   },
@@ -258,7 +270,7 @@ const styles = StyleSheet.create({
   },
   walletAmount: {
     fontSize: 18,
-    color: "green",
+    color: "#26A071",
     fontWeight: "bold",
   },
   walletMore:{
@@ -278,7 +290,7 @@ const styles = StyleSheet.create({
     width: 60,
     height: 60,
     borderRadius: 30,
-    backgroundColor: "#007bff",
+    backgroundColor: "#26A071",
     justifyContent: "center",
     alignItems: "center",
     elevation: 5,
@@ -289,15 +301,16 @@ const styles = StyleSheet.create({
     alignItems: "center",
     backgroundColor: "rgba(0,0,0,0.5)",
   },
+
   modalContent: {
     width: "90%",
     backgroundColor: "#fff",
-    borderRadius: 10,
+    borderRadius: 15,
     padding: 20,
     elevation: 5,
   },
   modalTitle: {
-    fontSize: 18,
+    fontSize: 20,
     fontWeight: "bold",
     marginBottom: 15,
     textAlign: "center",
@@ -305,7 +318,7 @@ const styles = StyleSheet.create({
   input: {
     borderWidth: 1,
     borderColor: "#ccc",
-    borderRadius: 5,
+    borderRadius: 10,
     padding: 10,
     marginBottom: 15,
     backgroundColor: "#fff",
@@ -313,5 +326,6 @@ const styles = StyleSheet.create({
   modalButtons: {
     flexDirection: "row",
     justifyContent: "space-between",
+    paddingHorizontal: 60,
   },
 });

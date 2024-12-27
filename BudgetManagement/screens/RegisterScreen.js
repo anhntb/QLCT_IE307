@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { StyleSheet, View, Text, TextInput, TouchableOpacity, Alert } from 'react-native';
+import { StyleSheet, View, Text, TextInput, TouchableOpacity, Alert, Image } from 'react-native';
 
 const RegisterScreen = ({ navigation }) => {
   const [username, setUsername] = useState('');
@@ -25,6 +25,10 @@ const RegisterScreen = ({ navigation }) => {
 
   return (
     <View style={styles.container}>
+      <View style={styles.backgroundDecorate}> 
+      </View>
+      <Image style={styles.logo} source={require('../assets/logo.png')}/>
+
       <Text style={styles.title}>Đăng ký</Text>
 
       <TextInput
@@ -77,10 +81,22 @@ const styles = StyleSheet.create({
     padding: 16,
     backgroundColor: '#f5f5f5',
   },
+  backgroundDecorate:{
+    top: 0,
+    left: 0,
+    height: 175,
+    width: "120%",
+    position: "absolute",
+    backgroundColor: "#26A071",
+  },
   title: {
     fontSize: 24,
     fontWeight: 'bold',
     marginBottom: 24,
+  },
+  logo: {
+    width: 200,
+    height: 200,
   },
   input: {
     width: '100%',
@@ -95,7 +111,7 @@ const styles = StyleSheet.create({
   button: {
     width: '100%',
     height: 50,
-    backgroundColor: '#007BFF',
+    backgroundColor: '#26A071',
     justifyContent: 'center',
     alignItems: 'center',
     borderRadius: 8,
@@ -107,7 +123,7 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
   },
   goBack: {
-    color: '#007BFF',
+    color: '#26A071',
     marginTop: 16,
   },
 });

@@ -1,5 +1,5 @@
 
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import {
   View,
   Text,
@@ -11,27 +11,50 @@ import {
   Animated,
   SafeAreaView,
 } from 'react-native';
-import { useContext } from 'react';
 import MonthOverview from './Overview/MonthOverview';
-import { monthlyData } from '../data/monthlyData';
-import { WalletContext } from '../context/WalletContext';
 import transactions from '../data/transactions';
 import { FontAwesome } from "@expo/vector-icons";
 import { useFocusEffect } from '@react-navigation/native';
-import { initializeDatabase, fetchAllWallets } from '../db/db';
+import { initializeDatabase, fetchAllWallets, fetchAllTransactions, getWalletName} from '../db/db';
 
 const HomeScreen = ({navigation}) => {
 
-    const month12Data = monthlyData.find((item) => item.month === 'Tháng Mười Hai 2024'); 
-    const { wallet } = useContext(WalletContext);
     const [wallets, setWallets] = useState([]);
+    const [transactions, setTransactions] = useState([]);
 
-
-    useEffect(() => {
-      initializeDatabase();
-      loadWallets();
-      }, []);
+    useFocusEffect(
+        useCallback(() => {
+          loadTransactions();
+          loadWallets();
+        }, [])
+      );
     
+    useEffect(() => {
+      loadTransactions();
+    }, []);
+      
+    const loadTransactions = async () => {
+      try {
+        const result = await fetchAllTransactions();
+        setTransactions(result);
+      } catch (error) {
+        console.error('Error fetching transactions:', error);
+      }
+    };
+    
+    const loadWallets = async () => {
+      try {
+        const result = await fetchAllWallets();
+        setWallets(result);
+      } catch (error) {
+        console.error('Error fetching wallets:', error);
+      }
+    };
+    // Lấy tên ví theo id
+    const getWalletName = (walletId) => {
+      const wallet = wallets.find(w => w.id === walletId);
+      return wallet ? wallet.name : 'Ví đã bị xóa';
+    };
     //Floating Button
     const [open, setOpen] = useState(false);
     const [animation] = useState(new Animated.Value(0));
@@ -48,20 +71,6 @@ const HomeScreen = ({navigation}) => {
     setOpen(!open);
    };
 
-   useFocusEffect(
-    useCallback(() => {
-      loadWallets();
-    }, [])
-  );
-
-  const loadWallets = async () => {
-    try {
-      const result = await fetchAllWallets();
-      setWallets(result);
-    } catch (error) {
-      console.error('Error fetching wallets:', error);
-    }
-  };
 
     const renderOption = (title, iconName, color, onPress) => {
     return (
@@ -85,10 +94,19 @@ const HomeScreen = ({navigation}) => {
       },
     ],
     };
+    const last7DaysTransactions = useMemo(() => {
+      const currentDate = new Date(); // Ngày hiện tại
+      const sevenDaysAgo = new Date();
+      sevenDaysAgo.setDate(currentDate.getDate() - 7); // Ngày cách đây 7 ngày
   
+      return transactions.filter((transaction) => {
+        const transactionDate = new Date(transaction.date); // Chuyển date của giao dịch thành dạng Date
+        return transactionDate >= sevenDaysAgo && transactionDate <= currentDate; // Lọc trong khoảng thời gian
+      });
+    }, [transactions]);
     // Sắp xếp giao dịch theo thứ tự thời gian (từ sớm đến trễ)
-    const sortedTransactions = [...transactions].sort(
-      (a, b) => new Date(a.date) - new Date(b.date)
+    const sortedTransactions = [...last7DaysTransactions].sort(
+      (a, b) => new Date(b.date) - new Date(a.date)
     );
 
     const [filter, setFilter] = useState("all"); // Trạng thái mặc định là "Tất cả"
@@ -100,6 +118,7 @@ const HomeScreen = ({navigation}) => {
       if (filter === "expense") return item.amount < 0;
     });
 
+    
     const calculateTotals = () => {
       let totalIncome = 0;
       let totalExpense = 0;
@@ -140,7 +159,7 @@ const HomeScreen = ({navigation}) => {
       <Text style={styles.title}>Ví của tôi</Text>
       <View>
          <FlatList
-          data={wallet}
+          data={wallets}
           keyExtractor={(item) => item.id.toString()}
           renderItem={({ item }) => (
             <View style={styles.walletItem}>
@@ -154,7 +173,7 @@ const HomeScreen = ({navigation}) => {
     
     {/* Các giao dịch */}
     <View style={styles.componentContainer} >
-      <Text style={styles.title} onPress={() => navigation.navigate("Transaction")}>Các giao dịch</Text>
+      <Text style={styles.title} onPress={() => navigation.navigate("Transaction")}>Các giao dịch 7 ngày qua</Text>
 
       {/* Tab */} 
       <View style={styles.tabContainer}>
@@ -196,7 +215,7 @@ const HomeScreen = ({navigation}) => {
       </View>
 
       <FlatList
-      data={filteredTransactions.slice(0, 10)}
+      data={filteredTransactions}
       keyExtractor={(item) => item.id}
       style={styles.transactionsList}
       renderItem={({ item }) => (
@@ -204,19 +223,19 @@ const HomeScreen = ({navigation}) => {
         <TouchableOpacity onPress={() => navigation.navigate("Transaction")}
           style={[
             styles.transaction,
-            { borderRightColor: item.amount < 0 ? "red" : "green" },
+            { borderRightColor: item.amount < 0 ? "#F7637D" : "#26A071" },
           ]}
         >
           <FontAwesome name={item.icon} size={22} style={styles.icon}/>
           <View style={styles.details}>
             <Text style={styles.category}>{item.category}</Text>
-            <Text style={styles.wallet}>{item.wallet}</Text>
+            <Text style={styles.wallet}>{getWalletName(item.walletId)}</Text>
           </View>
           <View style={styles.rightSection}>
             <Text
               style={[
                 styles.amount,
-                { color: item.amount < 0 ? "red" : "green" },
+                { color: item.amount < 0 ? "#F7637D" : "#26A071" },
               ]}
             >
               {item.amount.toLocaleString("vi-VN")} đ
@@ -234,20 +253,20 @@ const HomeScreen = ({navigation}) => {
     <View style={{justifyContent: 'flex-end'}}>
       <View style={styles.optionsContainer}>
         {open &&
-          renderOption('Chuyển tiền', 'exchange', '#9b59b6', () =>{
+          renderOption('Chuyển tiền', 'exchange', '#6B82FE', () =>{
             navigation.navigate("Wallets");
             setOpen(!open);
           }
             
           )}
         {open &&
-          renderOption('Thu nhập', 'plus', 'green', () =>{
+          renderOption('Thu nhập', 'plus', '#26A071', () =>{
             navigation.navigate("AddIncome");
             setOpen(!open);
           }
           )}
         {open &&
-          renderOption('Chi phí', 'minus', 'red', () =>{
+          renderOption('Chi phí', 'minus', '#F7637D', () =>{
             navigation.navigate("AddExpense");
             setOpen(!open);
           }
@@ -299,7 +318,7 @@ const styles = StyleSheet.create({
   },
   walletAmount: {
     fontSize: 16,
-    color: "green",
+    color: "#26A071",
     fontWeight: "bold",
   },
   transaction: {
@@ -328,20 +347,22 @@ const styles = StyleSheet.create({
     width: 100,
     alignItems: "center",
     paddingHorizontal: 10,
-    borderColor: "#3498db",
+    borderColor: "#26A071",
     borderRadius: 8,
     backgroundColor: "white",
   },
+
   activeTabButton: {
-    backgroundColor: "#3498db",
+    backgroundColor: "#26A071",
   },
   tabText: {
     fontSize: 16,
+    fontWeight: "bold",
     textAlign: "center",
-    color: "#3498db",
+    color: "#26A071",
   },
   activeTabText: {
-    color: "#fff",
+    color: "white",
     fontWeight: "bold",
   },
   icon: {
@@ -370,7 +391,7 @@ const styles = StyleSheet.create({
     position: 'absolute',
     bottom: 30,
     right: 30,
-    backgroundColor: '#007BFF',
+    backgroundColor: '#065A4A',
     width: 50,
     height: 50,
     borderRadius: 30,
@@ -409,7 +430,7 @@ const styles = StyleSheet.create({
     color: 'white',
     fontWeight: "bold",
     fontSize: 16,
-    backgroundColor: '#007BFF',
+    backgroundColor: '#26A071',
     borderRadius: 5,
     padding: 5,
   },

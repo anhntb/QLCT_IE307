@@ -46,7 +46,7 @@ export default function UserProfile() {
   return (
     <View style={styles.userContainer}>
       {/* Avatar */}
-      <TouchableOpacity onPress={isEditing ? pickImage : null}>
+      <TouchableOpacity style={styles.avatarContainer} onPress={isEditing ? pickImage : null}>
         <Image
           source={
             avatar ? { uri: avatar } : require("../assets/default-avatar.jpg")
@@ -116,10 +116,10 @@ export default function UserProfile() {
 
       {/* Edit/Save Button */}
       <View style={styles.buttonGroup}>
-        <TouchableOpacity style={styles.button} onPress={toggleEdit}>
+        <TouchableOpacity style={styles.editButton} onPress={toggleEdit}>
           <Text style={styles.buttonText}>{isEditing ? "Lưu" : "Chỉnh sửa"}</Text>
         </TouchableOpacity>
-        <TouchableOpacity style={styles.button} onPress={logout}>
+        <TouchableOpacity style={styles.logoutButton} onPress={logout}>
           <Text style={styles.buttonText}>Đăng xuất</Text>
         </TouchableOpacity>
       </View>
@@ -130,7 +130,7 @@ export default function UserProfile() {
 
 const styles = StyleSheet.create({
    userContainer: {
-    marginTop: 20, 
+    marginTop: 10, 
     flex: 1,
     padding: 20,
     alignItems: "center",
@@ -140,17 +140,31 @@ const styles = StyleSheet.create({
     width: 120,
     height: 120,
     objectFit: "cover",
-    borderRadius: 60,
     backgroundColor: "#ddd",
+    borderWidth: 2,
+    padding: 10,
+    borderRadius: 100,
+    borderColor: "#26A071"
+  },
+  avatarContainer:{
+    borderWidth: 2,
+    borderRadius: 100,
+    width: 130,
+    height: 130,
+    alignItems: "center",
+    justifyContent: "center",
     marginBottom: 20,
+    borderColor: "#26A071",
+
   },
   cameraIcon: {
     position: "absolute",
     bottom: 0,
     right: 0,
     backgroundColor: "#fff",
-    borderRadius: 12,
+    borderRadius: 100,
     padding: 4,
+    color: "#26A071",
   },
   inputGroup: {
     width: "100%",
@@ -187,8 +201,14 @@ const styles = StyleSheet.create({
     fontSize: 16,
     marginHorizontal: 10,
   },
-  button: {
-    backgroundColor: "#007bff",
+  editButton: {
+    backgroundColor: "#4BBF87",
+    padding: 15,
+    margin: 20,
+    borderRadius: 5,
+  },
+  logoutButton: {
+    backgroundColor: "#F7637D",
     padding: 15,
     margin: 20,
     borderRadius: 5,
