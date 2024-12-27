@@ -1,4 +1,5 @@
-import React, { useState, useEffect } from 'react';
+
+import React, { useState, useEffect, useCallback } from 'react
 import {
   View,
   Text,
@@ -19,7 +20,12 @@ import { FontAwesome } from "@expo/vector-icons";
 import { initializeDatabase, fetchAllWallets } from '../db/db';
 
 const HomeScreen = ({navigation}) => {
+
+import { useFocusEffect } from '@react-navigation/native';
     const month12Data = monthlyData.find((item) => item.month === 'Tháng Mười Hai 2024'); 
+    const { wallet } = useContext(WalletContext);
+    const [wallets, setWallets] = useState([]);
+
 
     const [wallets, setWallets] = useState([]);
     useEffect(() => {
@@ -46,6 +52,21 @@ const HomeScreen = ({navigation}) => {
 
     setOpen(!open);
    };
+
+   useFocusEffect(
+    useCallback(() => {
+      loadWallets();
+    }, [])
+  );
+
+  const loadWallets = async () => {
+    try {
+      const result = await fetchAllWallets();
+      setWallets(result);
+    } catch (error) {
+      console.error('Error fetching wallets:', error);
+    }
+  };
 
     const renderOption = (title, iconName, color, onPress) => {
     return (
@@ -124,7 +145,7 @@ const HomeScreen = ({navigation}) => {
       <Text style={styles.title}>Ví của tôi</Text>
       <View>
          <FlatList
-          data={wallets}
+          data={wallet}
           keyExtractor={(item) => item.id.toString()}
           renderItem={({ item }) => (
             <View style={styles.walletItem}>
