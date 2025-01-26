@@ -46,4 +46,5 @@ Xây dựng ứng dụng quản lý chi tiêu cá nhân với ReactNative
 
 ## Danh sách các màn hình <a name="screen"></a>
 <p float="left">
+  <img src="" width="200" />
 </p>
