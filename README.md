@@ -46,5 +46,15 @@ Xây dựng ứng dụng quản lý chi tiêu cá nhân với ReactNative
 
 ## Danh sách các màn hình <a name="screen"></a>
 <p float="left">
-  <img src="" width="200" />
+  <img src="https://github.com/anhntb/QLCT_IE307/blob/baoanh/ScreenImages/login.jpg" width="200" />
+  <img src="https://github.com/anhntb/QLCT_IE307/blob/baoanh/ScreenImages/register.jpg" width="200" />
+  <img src="https://github.com/anhntb/QLCT_IE307/blob/baoanh/ScreenImages/home.jpg" width="200" />
+  <img src="https://github.com/anhntb/QLCT_IE307/blob/baoanh/ScreenImages/transaction.jpg" width="200" />
+  <img src="https://github.com/anhntb/QLCT_IE307/blob/baoanh/ScreenImages/filterTransaction.jpg" width="200" />
+  <img src="https://github.com/anhntb/QLCT_IE307/blob/baoanh/ScreenImages/overview.jpg" width="200" />
+  <img src="https://github.com/anhntb/QLCT_IE307/blob/baoanh/ScreenImages/addIncome.jpg" width="200" />
+  <img src="https://github.com/anhntb/QLCT_IE307/blob/baoanh/ScreenImages/incomeCategory.jpg" width="200" />
+  <img src="https://github.com/anhntb/QLCT_IE307/blob/baoanh/ScreenImages/wallet.jpg" width="200" />
+  <img src="https://github.com/anhntb/QLCT_IE307/blob/baoanh/ScreenImages/moneyTransfer.jpg" width="200" />
+  <img src="https://github.com/anhntb/QLCT_IE307/blob/baoanh/ScreenImages/userInfo.jpg" width="200" />
 </p>
