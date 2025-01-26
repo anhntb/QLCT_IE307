@@ -68,7 +68,7 @@ const MonthOverview = ({ data, isHideRemainder }) => {
         />
         <View
           style={{
-            marginLeft: 31,
+            marginLeft: 33,
             position: 'absolute',
             width: 40,
             height: 40,

@@ -72,7 +72,7 @@ const styles = StyleSheet.create({
   backgroundDecorate:{
     top: 0,
     left: 0,
-    height: 225,
+    height: "31%",
     width: "120%",
     position: "absolute",
     backgroundColor: "#26A071",

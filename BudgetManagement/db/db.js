@@ -198,6 +198,31 @@ export const deleteTran = async (id) => {
   }
 };
 
+
+{/* Xóa tất cả dữ liệu trong DATABASE */}
+
+// // Hàm để đóng cơ sở dữ liệu
+// export const closeDatabase = () => {
+//   if (db) {
+//     db.closeSync();
+//     console.log('Database closed successfully');
+//   }
+// };
+
+// // Hàm xóa tất cả dữ liệu trong cơ sở dữ liệu
+// export const deleteAllData = async () => {
+//   try {
+//     closeDatabase();
+//     await SQLite.deleteDatabaseAsync('BudgetManager.db');
+//     console.log('Database deleted successfully');
+//     // Mở lại cơ sở dữ liệu sau khi xóa
+//     openDatabase();
+//   } catch (error) {
+//     console.error('Error deleting database:', error);
+//     throw error;
+//   }
+// };
+
 // // Sửa thu chi
 // export const updateTran = async (id, amount, category, date, walletId, note = '') => {
 //   const db = await openDatabase();

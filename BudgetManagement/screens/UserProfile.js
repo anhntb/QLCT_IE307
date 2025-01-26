@@ -1,9 +1,10 @@
 import React, { useState, useContext } from "react";
-import { View, Text, TextInput, StyleSheet, TouchableOpacity, Image, Button, Platform } from "react-native";
+import { View, Text, TextInput, StyleSheet, TouchableOpacity, Image, Button, Platform, Alert } from "react-native";
 import DateTimePicker from "@react-native-community/datetimepicker";
 import { FontAwesome } from "@expo/vector-icons";
 import * as ImagePicker from "expo-image-picker";
 import { AuthContext } from "../context/AuthContext";
+import { deleteAllData } from '../db/db'; // Import hàm xóa dữ liệu
 
 export default function UserProfile() {
   const [isEditing, setIsEditing] = useState(false);
@@ -42,6 +43,32 @@ export default function UserProfile() {
   });
 
   const { logout } = useContext(AuthContext);
+
+  // // Đặt lại dữ liệu
+  // const handleResetData = () => {
+  //   Alert.alert(
+  //     "Đặt lại dữ liệu",
+  //     "Bạn có chắc chắn muốn xóa toàn bộ dữ liệu không?",
+  //     [
+  //       {
+  //         text: "Hủy",
+  //         style: "cancel"
+  //       },
+  //       {
+  //         text: "Đồng ý",
+  //         onPress: async () => {
+  //           try {
+  //             await deleteAllData();
+  //             Alert.alert("Thành công", "Dữ liệu đã được xóa.");
+  //           } catch (error) {
+  //             console.error('Error resetting data:', error);
+  //             Alert.alert("Lỗi", "Không thể xóa dữ liệu.");
+  //           }
+  //         }
+  //       }
+  //     ]
+  //   );
+  // };
 
   return (
     <View style={styles.userContainer}>
@@ -123,6 +150,11 @@ export default function UserProfile() {
           <Text style={styles.buttonText}>Đăng xuất</Text>
         </TouchableOpacity>
       </View>
+
+      {/* Nút Reset Data */}
+      {/* <TouchableOpacity style={styles.resetButton} onPress={handleResetData}>
+        <Text style={styles.buttonText}>Đặt lại dữ liệu</Text>
+      </TouchableOpacity> */}
     </View>
 
   );
@@ -223,4 +255,14 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: "bold",
   },
+  // resetButton: {
+  //   position: 'absolute',
+  //   bottom: 20,
+  //   left: 40,
+  //   right: 40,
+  //   padding: 10,
+  //   backgroundColor: 'red',
+  //   borderRadius: 5,
+  //   alignItems: 'center',
+  // },
 });
