@@ -12,7 +12,7 @@
 [Đề tài](#topic)\
 [Mô tả project](#project)\
 &nbsp;&nbsp;&nbsp; [Công nghệ sử dụng](#use)\
-&nbsp;&nbsp;&nbsp; [Tính năng chính](#main-feature)\
+&nbsp;&nbsp;&nbsp; [Các trang chức năng tương tác](#main-feature)\
 &nbsp;&nbsp;&nbsp; [Danh sách các màn hình](#screen)
 
 # Thông tin nhóm <a name="info"></a>
