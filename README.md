@@ -4,7 +4,7 @@
   </a>
 </p>
 
-<h1 align="center"><b>ĐỒ ÁN <br>CÔNG NGHỆ LẬP TRÌNH ĐA NỀN TẢNG <br>CHO ỨNG DỤNG DI ĐỘNG</b></h1>
+<h1 align="center"><b>ĐỒ ÁN<br>CÔNG NGHỆ LẬP TRÌNH ĐA NỀN TẢNG <br>CHO ỨNG DỤNG DI ĐỘNG</b></h1>
 
 # Mục lục
 
